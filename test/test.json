@@ -1,0 +1,28 @@
+{
+  "source": {
+    "type": "kafka",
+    "broker": "localhost:9092",
+    "topic": "tester",
+    "groupid": "test3",
+    "obj": "Tester",
+    "to": {
+      "filter": {
+        "strComp": {
+          "name": "filterme"
+        },
+        "to": {
+          "filter": {
+            "intComp": {
+              "name": "value",
+              "comp": "lt",
+              "val": "100"
+            },
+            "sink": {
+              "print": "test"
+            }
+          }
+        }
+      }
+    }
+  }
+}
