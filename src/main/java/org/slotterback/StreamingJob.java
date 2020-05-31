@@ -54,46 +54,20 @@ public class StreamingJob {
 
 		String jsonFile = args[0];
 		String schema = args[1];
+		Map schemas = new HashMap<String, String>();
+		schemas.put("Tester", schema);
+
 
 		JsonObject jsonObject = JsonParser.parseReader(new FileReader(jsonFile)).getAsJsonObject();
-		Set<String> keys = jsonObject.keySet();
+		StreamBuilder builder = new StreamBuilder();
+		builder.buildStream(jsonObject, env, schemas);
 
-		for(String tmp : keys){
-			System.out.println(tmp);
-			JsonObject str = jsonObject.getAsJsonObject(tmp);
-
-			DataStream<GenericRecord> ds = null;
-			if(tmp.equals("source"))
-				GenericSource.sourceBuilder(str, env, schema).getSourceStream().print();
-		}
 
 		env.execute("Flink Streaming Java API Skeleton");
 	}
 
-	/*
-	private static DataStream getSource(StreamExecutionEnvironment env, JsonObject str, String schema){
 
-		Set<String> keys1 = str.keySet();
 
-		if(str.get("type").toString().replaceAll("\"","").equals("kafka")){
-
-			Properties properties = new Properties();
-			String broker = str.get("broker").toString().replaceAll("\"","");
-			String groupId = str.get("groupid").toString().replaceAll("\"","");
-			String topic = str.get("topic").toString().replaceAll("\"","");
-
-			properties.setProperty("bootstrap.servers", broker);
-			properties.setProperty("group.id", groupId);
-			DataStreamSource<Map> stream = env
-					.addSource(new FlinkKafkaConsumer(topic,
-							GenericDeserializationSchema(schema),
-							properties));
-			return stream.returns(Map.class);
-		}
-
-		return null;
-	}
-	*/
 
 }
 

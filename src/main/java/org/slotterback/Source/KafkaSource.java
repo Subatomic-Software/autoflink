@@ -10,17 +10,22 @@ import org.slotterback.SerDes.GenericDeserializationSchema;
 
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 public class KafkaSource extends GenericSource{
 
     private DataStreamSource source;
 
-    public KafkaSource(StreamExecutionEnvironment env, String schema, JsonObject obj) {
+    public KafkaSource(StreamExecutionEnvironment env, Set<String> keys, String schema, JsonObject obj) {
         super();
         Properties properties = new Properties();
         String broker = obj.get("broker").toString().replaceAll("\"","");
         String groupId = obj.get("groupid").toString().replaceAll("\"","");
         String topic = obj.get("topic").toString().replaceAll("\"","");
+
+        keys.remove("broker");
+        keys.remove("groupid");
+        keys.remove("topic");
 
         properties.setProperty("bootstrap.servers", broker);
         properties.setProperty("group.id", groupId);

@@ -1,26 +1,23 @@
 {
-  "source": {
-    "type": "kafka",
+  "kafkaSource": {
     "broker": "localhost:9092",
     "topic": "tester",
-    "groupid": "test3",
-    "obj": "Tester",
-    "to": {
+    "groupid": "test",
+    "schema": "Tester",
+    "filter": {
+      "comp": {
+        "field": "key",
+        "comp": "neq",
+        "val": "key0"
+      },
       "filter": {
-        "strComp": {
-          "name": "filterme"
+        "comp": {
+          "field": "value",
+          "comp": "lt",
+          "val": 5
         },
-        "to": {
-          "filter": {
-            "intComp": {
-              "name": "value",
-              "comp": "lt",
-              "val": "100"
-            },
-            "sink": {
-              "print": "test"
-            }
-          }
+        "sink": {
+          "print": "filter1"
         }
       }
     }
