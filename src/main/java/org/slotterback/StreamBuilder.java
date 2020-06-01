@@ -27,6 +27,7 @@ public class StreamBuilder {
 
         functionList = new ArrayList();
         functionList.add("filter");
+        functionList.add("map");
 
         keyList = new ArrayList();
 

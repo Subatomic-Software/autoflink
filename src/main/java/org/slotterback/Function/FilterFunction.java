@@ -16,20 +16,17 @@ public class FilterFunction extends GenericFunction{
         Boolean compare(Object obj1, Object obj2);
     }
 
-
     private SingleOutputStreamOperator stream;
 
     public FilterFunction(StreamExecutionEnvironment env, Set<String> keys, SingleOutputStreamOperator stream, JsonObject obj) {
-        super();
 
-
+        //TODO compare doubles to self values?
         DynamicCompare eqCompare = (obj1, obj2) -> { return obj1 == obj2; };
         DynamicCompare neqCompare = (obj1, obj2) -> { return obj1 != obj2; };
         DynamicCompare ltCompare = (obj1, obj2) -> { return Double.valueOf(obj1.toString()) < (Double)obj2; };
         DynamicCompare gtCompare = (obj1, obj2) -> { return Double.valueOf(obj1.toString()) > (Double)obj2; };
 
-        JsonObject conf = obj.getAsJsonObject("comp");
-
+        JsonObject conf = obj.getAsJsonObject("func");
         final String field = conf.get("field").getAsString();
         String comp = conf.get("comp").getAsString();
         Object val = conf.get("val").getAsString();
@@ -51,14 +48,13 @@ public class FilterFunction extends GenericFunction{
             compare = null;
         }
 
-        keys.remove("comp");
+        keys.remove("func");
 
-        stream = stream.filter(new RichFilterFunction() {
+        stream = stream.filter(new RichFilterFunction<Map>() {
             @Override
-            public boolean filter(Object o) throws Exception {
-                HashMap obj = (HashMap) o;
-                System.out.println(compare.compare(obj.get(field), finalVal));
-                return compare.compare(obj.get(field), finalVal);
+            public boolean filter(Map map) throws Exception {
+                System.out.println(compare.compare(map.get(field), finalVal));
+                return compare.compare(map.get(field), finalVal);
             }
         });
 

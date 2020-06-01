@@ -5,16 +5,39 @@
     "groupid": "test",
     "schema": "Tester",
     "filter": {
-      "comp": {
+      "func": {
         "field": "key",
         "comp": "neq",
         "val": "key0"
       },
       "filter": {
-        "comp": {
+        "func": {
           "field": "value",
           "comp": "lt",
           "val": 5
+        },
+        "map": {
+          "func": {
+            "op": "upsert",
+            "target": "value1",
+            "eval": "value+value"
+          },
+          "map": {
+            "func": {
+              "op": "upsert",
+              "target": "value2",
+              "eval": "value1+key"
+            },
+            "map": {
+              "func": {
+                "op": "remove",
+                "target": "value"
+              },
+              "sink": {
+                "print": "maps"
+              }
+            }
+          }
         },
         "sink": {
           "print": "filter1"

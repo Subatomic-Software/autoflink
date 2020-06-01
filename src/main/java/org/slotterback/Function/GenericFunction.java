@@ -12,8 +12,11 @@ public abstract class GenericFunction {
 
     public final static GenericFunction functionBuilder(String entry, JsonObject obj, Set<String> keys, StreamExecutionEnvironment env, SingleOutputStreamOperator stream){
 
+        //TODO make string bound to function
         if(entry.equals("filter")){
             return new FilterFunction(env, keys, stream, obj);
+        }else if(entry.equals("map")){
+            return new MapFunction(env, keys, stream, obj);
         }
         return null;
 
