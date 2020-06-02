@@ -18,26 +18,10 @@
 
 package org.slotterback;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericDatumReader;
-import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.io.DatumReader;
-import org.apache.avro.io.DecoderFactory;
-import org.apache.avro.io.EncoderFactory;
-import org.apache.avro.io.JsonEncoder;
-import org.apache.flink.api.common.serialization.DeserializationSchema;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
-import org.slotterback.Source.GenericSource;
 
-import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 
 public class StreamingJob {
@@ -46,7 +30,7 @@ public class StreamingJob {
 		// set up the streaming execution environment
 		final StreamExecutionEnvironment env;
 
-		if(Arrays.stream(args).anyMatch(str -> str.toString().equals("dev"))){
+		if(Arrays.stream(args).anyMatch(str -> str.equals("dev"))){
 			env = StreamExecutionEnvironment.createLocalEnvironment(1);
 		}else{
 			env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -54,13 +38,17 @@ public class StreamingJob {
 
 		String jsonFile = args[0];
 		String schema = args[1];
+		String schema2 = args[2];
 		Map schemas = new HashMap<String, String>();
 		schemas.put("Tester", schema);
+		schemas.put("Tester2", schema2);
+		schemas.put(null, "");
 
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map streamBuilder = objectMapper.readValue(new FileReader(jsonFile), HashMap.class);
 
-		JsonObject jsonObject = JsonParser.parseReader(new FileReader(jsonFile)).getAsJsonObject();
 		StreamBuilder builder = new StreamBuilder();
-		builder.buildStream(jsonObject, env, schemas);
+		builder.buildStream(streamBuilder, env, schemas);
 
 
 		env.execute("Flink Streaming Java API Skeleton");

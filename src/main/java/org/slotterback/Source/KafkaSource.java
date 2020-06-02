@@ -1,7 +1,5 @@
 package org.slotterback.Source;
 
-import com.google.gson.JsonObject;
-import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -16,20 +14,35 @@ public class KafkaSource extends GenericSource{
 
     private DataStreamSource source;
 
-    public KafkaSource(StreamExecutionEnvironment env, Set<String> keys, String schema, JsonObject obj) {
-        super();
+    public KafkaSource(StreamExecutionEnvironment env, Set<String> keys, Map streamBuilder, Map schemas) {
         Properties properties = new Properties();
-        String broker = obj.get("broker").toString().replaceAll("\"","");
-        String groupId = obj.get("groupid").toString().replaceAll("\"","");
-        String topic = obj.get("topic").toString().replaceAll("\"","");
+        Map kafka = (Map) streamBuilder.get("kafka");
 
+        String schema = null;
+        try {
+            schema = kafka.get("schema").toString();
+        } catch (Exception e){ }
+        String format = null;
+        try {
+            format = kafka.get("format").toString();
+        } catch (Exception e){ }
+
+        String broker = kafka.get("broker").toString();
+        String groupId = kafka.get("groupid").toString();
+        String topic = kafka.get("topic").toString();
+
+        /*
         keys.remove("broker");
         keys.remove("groupid");
         keys.remove("topic");
+        */
 
         properties.setProperty("bootstrap.servers", broker);
         properties.setProperty("group.id", groupId);
-        source = env.addSource(new FlinkKafkaConsumer(topic, new GenericDeserializationSchema(schema), properties));
+        source = env.addSource(new FlinkKafkaConsumer(
+                topic,
+                GenericDeserializationSchema.getDeserializationSchema(format, schemas.get(schema).toString()),
+                properties));
     }
 
     @Override

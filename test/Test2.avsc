@@ -1,0 +1,10 @@
+{
+   "type" : "record",
+   "namespace" : "org.slotterback",
+   "name" : "Test2",
+   "fields" : [
+      { "name" : "key" , "type" : "string" },
+      { "name" : "value1" , "type" : "int" },
+      { "name" : "value2" , "type" : "string" }
+   ]
+}

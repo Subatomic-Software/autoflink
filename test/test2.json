@@ -1,16 +1,14 @@
 {
   "kafkaSource": {
-    "kafka": {
-      "broker": "localhost:9092",
-      "topic": "tester",
-      "groupid": "test",
-      "format": "json"
-    },
+    "broker": "localhost:9092",
+    "topic": "tester",
+    "groupid": "test",
+    "schema": "Tester",
     "filter": {
       "func": {
-        "field": "key",
+        "field": "filterme",
         "comp": "neq",
-        "val": "key0"
+        "val": "tmp"
       },
       "filter": {
         "func": {
@@ -35,20 +33,18 @@
                 "op": "remove",
                 "target": "value"
               },
-              "kafkaSink": {
-                "kafka": {
-                  "broker": "localhost:9092",
-                  "topic": "testerout",
-                  "format": "avro",
-                  "schema": "Tester2"
-                }
+              "sink": {
+                "print": "maps"
               }
             }
           }
         },
-        "print": {
-          "name": "filter1"
+        "sink": {
+          "print": "filter2"
         }
+      },
+      "sink": {
+        "print": "filter1"
       }
     }
   }

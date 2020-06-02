@@ -1,47 +1,30 @@
 package org.slotterback.SerDes;
 
-import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericDatumReader;
-import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.io.DatumReader;
-import org.apache.avro.io.DecoderFactory;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GenericDeserializationSchema implements DeserializationSchema<Map<String, Object>> {
+public abstract class GenericDeserializationSchema implements DeserializationSchema<Map<String, Object>> {
 
-    private String schemaFile;
-
-    public GenericDeserializationSchema(String schemaFile) {
-        this.schemaFile = schemaFile;
+    private interface DynamicDeserializationSchema {
+        GenericDeserializationSchema getDeserializationSchema(String schemaFile);
     }
 
-    @Override
-    public Map<String, Object> deserialize(byte[] bytes) throws IOException {
+    private static DynamicDeserializationSchema none = (String schemaFile) -> null;
+    private static  DynamicDeserializationSchema avro = (String schemaFile) -> new AvroDeserializationSchema(schemaFile);
+    private static  DynamicDeserializationSchema json = (String schemaFile) -> new JsonDeserializationSchema();
 
-        Schema schema = new Schema.Parser().parse(new File(schemaFile));
-        DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
-        GenericRecord record = reader.read(null, DecoderFactory.get().binaryDecoder(bytes, null));
+    static Map<String, DynamicDeserializationSchema> typeMap = new HashMap(){
+        {
+            put(null, none);
+            put("avro", avro);
+            put("json", json);
+        }
+    };
 
-        Map<String, Object> map = new HashMap<>();
-        record.getSchema().getFields().forEach(field ->
-                map.put(field.name(), record.get(field.name())));
-
-        return map;
+    public static GenericDeserializationSchema getDeserializationSchema(String format, String schemaFile){
+        return typeMap.get(format).getDeserializationSchema(schemaFile);
     }
 
-    @Override
-    public boolean isEndOfStream(Map<String, Object> map) {
-        return false;
-    }
-
-    @Override
-    public TypeInformation<Map<String, Object>> getProducedType() {
-        return null;
-    }
 }
