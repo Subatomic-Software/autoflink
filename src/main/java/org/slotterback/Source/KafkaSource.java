@@ -31,12 +31,6 @@ public class KafkaSource extends GenericSource{
         String groupId = kafka.get("groupid").toString();
         String topic = kafka.get("topic").toString();
 
-        /*
-        keys.remove("broker");
-        keys.remove("groupid");
-        keys.remove("topic");
-        */
-
         properties.setProperty("bootstrap.servers", broker);
         properties.setProperty("group.id", groupId);
         source = env.addSource(new FlinkKafkaConsumer(

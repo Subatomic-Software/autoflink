@@ -8,9 +8,9 @@
     },
     "filter": {
       "func": {
-        "field": "key",
+        "field": "embedder.embedded",
         "comp": "neq",
-        "val": "key0"
+        "val": "embed2"
       },
       "filter": {
         "func": {
@@ -39,8 +39,7 @@
                 "kafka": {
                   "broker": "localhost:9092",
                   "topic": "testerout",
-                  "format": "avro",
-                  "schema": "Tester2"
+                  "format": "json"
                 }
               }
             }

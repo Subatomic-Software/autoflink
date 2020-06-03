@@ -1,0 +1,23 @@
+{
+  "kafkaSource": {
+    "kafka": {
+      "broker": "localhost:9092",
+      "topic": "tester",
+      "groupid": "test",
+      "format": "json"
+    },
+    "map": {
+      "func": {
+        "op": "calc",
+        "target": "embedder_embedder_embedder_target",
+        "eval": "(embedder_embedded+40+value^(7)*embedder_embedder_embedded)/embedder_embedded"
+      },
+      "print": {
+        "name": "filter1"
+      }
+    },
+    "print": {
+      "name": "filter1"
+    }
+  }
+}

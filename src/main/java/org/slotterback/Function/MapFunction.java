@@ -1,79 +1,106 @@
 package org.slotterback.Function;
 
-import org.apache.commons.lang3.StringUtils;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.slotterback.GenericUtil;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MapFunction extends GenericFunction{
 
     private SingleOutputStreamOperator stream;
-    private List<String> operators;
 
-    private interface Arithmetic extends Serializable {
-        Object apply(Object o1, Object o2);
+    private interface MapOperations extends Serializable {
+        Map run(Map map, Expression expression, List<String> vars, String target);
     }
 
     public MapFunction(StreamExecutionEnvironment env, Set<String> keys, SingleOutputStreamOperator stream, Map streamBuilder) {
 
-        Map<String, Arithmetic> operators = new HashMap<>();
-        operators.put("+", (Object o1, Object o2) -> {
-            if(StringUtils.isNumeric(o1.toString()) && StringUtils.isNumeric(o2.toString())){
-                return Double.valueOf(o1.toString())+Double.valueOf(o2.toString());
-            }else{
-                return o1.toString()+o2.toString();
-            }
-        });
-        operators.put("-", (Object o1, Object o2) -> Double.valueOf(o1.toString())-Double.valueOf(o2.toString()));
-        operators.put("*", (Object o1, Object o2) -> Double.valueOf(o1.toString())*Double.valueOf(o2.toString()));
-        operators.put("/", (Object o1, Object o2) -> Double.valueOf(o1.toString())/Double.valueOf(o2.toString()));
-
+        Map<String, MapOperations> mapOperations = new HashMap<>();
+        mapOperations.put("calc", (Map map, Expression expression, List<String> vars, String target)
+                -> mapCalc(map, expression, vars, target));
+        mapOperations.put("remove", (Map map, Expression expression, List<String> vars, String target)
+                -> remove(map, target));
+        mapOperations.put("replace", (Map map, Expression expression, List<String> vars, String target)
+                -> replace(map, vars, target));
 
         Map conf = (Map) streamBuilder.get("func");
         final String operation = conf.get("op").toString();
         final String target = conf.get("target").toString();
 
-        String[] evals = null;
-        String operator = "";
+        List<String> varList = new ArrayList<>();
+        String evalFunc = "0";
+        if(operation.equals("calc")) {
 
-        if(!operation.equals("remove")) {
-            final String eval = conf.get("eval").toString();
-            operator = operators.keySet().stream().filter(str -> eval.contains(str)).findFirst().get();
-            evals = eval.split("\\"+operator);
+            evalFunc = conf.get("eval").toString();
+            String regex = "[\\!|\\%|\\^|\\&|\\*|\\(|\\)|\\+|\\-|\\/]";
+            String[] evals = evalFunc.split(regex);
+
+            varList = Arrays
+                    .stream(evals)
+                    .distinct()
+                    .filter(str -> !str.equals(""))
+                    .filter(str -> {
+                        try{
+                            Double.valueOf(str);
+                        } catch (Exception e){
+                            return true;
+                        }
+                        return false;
+                    })
+                    .collect(Collectors.toList());
+        }else if(operation.equals("replace")){
+            varList.add(conf.get("value").toString());
         }
 
-        final String[] finalEvals = evals;
-        final String finalOperator = operator;
-
-
+        final String finalEvalFunc = evalFunc;
+        final List<String> finalVars = varList;
 
         stream = stream.map(new RichMapFunction<Map<Object, Object>, Map<Object, Object>>() {
+            transient Expression expression;
+
+            @Override
+            public void open(Configuration parameters) throws Exception {
+                super.open(parameters);
+                expression = new ExpressionBuilder(finalEvalFunc)
+                        .variables(new HashSet(finalVars))
+                        .build();
+            }
+
             @Override
             public Map map(Map map) throws Exception {
-                if(!operation.equals("remove")) {
-                    //TODO chain operations
-                    Object var1 = null;
-                    Object var2 = null;
-                    for (Object field : map.keySet()) {
-                        if (field.toString().equals(finalEvals[0])) {
-                            var1 = map.get(field);
-                        }
-                        if (field.toString().equals(finalEvals[1])) {
-                            var2 = map.get(field);
-                        }
-                    }
-                    map.put(target, operators.get(finalOperator).apply(var1, var2));
-                }else{
-                    map.remove(target);
-                }
-                return map;
+                return mapOperations.get(operation).run(map, expression, finalVars, target);
             }
         });
 
         this.stream = stream;
+    }
+
+    private static Map mapCalc(Map map, Expression expression, List<String> vars, String target){
+        Map<String, Double> variables = new HashMap<>();
+        for(String var : vars){
+            Double val = Double.valueOf(GenericUtil.getEmbeddedValue(map, var).toString());
+            variables.put(var, val);
+        }
+        double result = expression.setVariables(variables).evaluate();
+        GenericUtil.putEmbeddedValue(map, target, result);
+        return map;
+    }
+
+    private static Map remove(Map map, String target){
+        GenericUtil.removeEmbeddedValue(map, target);
+        return map;
+    }
+
+    private static Map replace(Map map, List<String> vars, String target){
+        GenericUtil.putEmbeddedValue(map, target, vars.get(0));
+        return map;
     }
 
     @Override

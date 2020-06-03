@@ -41,7 +41,7 @@ public class StreamBuilder {
 
 
         for(String entry : keys)
-            buildStream(entry, (HashMap)streamBuilder.get(entry), null);
+            buildStream(entry, (Map)streamBuilder.get(entry), null);
     }
 
     private void buildStream(String entry, Map streamBuilder, SingleOutputStreamOperator stream){

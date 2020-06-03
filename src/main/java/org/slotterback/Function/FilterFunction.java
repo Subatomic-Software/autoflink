@@ -3,6 +3,7 @@ package org.slotterback.Function;
 import org.apache.flink.api.common.functions.RichFilterFunction;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.slotterback.GenericUtil;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -19,10 +20,10 @@ public class FilterFunction extends GenericFunction{
     public FilterFunction(StreamExecutionEnvironment env, Set<String> keys, SingleOutputStreamOperator stream, Map streamBuilder) {
 
         //TODO compare doubles to self values?
-        DynamicCompare eqCompare = (obj1, obj2) -> { return obj1 == obj2; };
-        DynamicCompare neqCompare = (obj1, obj2) -> { return obj1 != obj2; };
-        DynamicCompare ltCompare = (obj1, obj2) -> { return Double.valueOf(obj1.toString()) < (Double)obj2; };
-        DynamicCompare gtCompare = (obj1, obj2) -> { return Double.valueOf(obj1.toString()) > (Double)obj2; };
+        DynamicCompare eqCompare = (obj1, obj2) -> { return obj1.equals(obj2); };
+        DynamicCompare neqCompare = (obj1, obj2) -> { return !obj1.equals(obj2); };
+        DynamicCompare ltCompare = (obj1, obj2) -> { return (Double) obj1 < (Double) obj2; };
+        DynamicCompare gtCompare = (obj1, obj2) -> { return (Double) obj1 > (Double) obj2; };
 
         Map conf = (Map) streamBuilder.get("func");
         final String field = conf.get("field").toString();
@@ -51,8 +52,13 @@ public class FilterFunction extends GenericFunction{
         stream = stream.filter(new RichFilterFunction<Map>() {
             @Override
             public boolean filter(Map map) throws Exception {
-                System.out.println(compare.compare(map.get(field), finalVal));
-                return compare.compare(map.get(field), finalVal);
+                Object compVal = GenericUtil.getEmbeddedValue(map, field);
+                try {
+                    compVal = Double.valueOf(compVal.toString());
+                } catch (Exception e) {}
+
+                System.out.println(compare.compare(compVal, finalVal));
+                return compare.compare(compVal, finalVal);
             }
         });
 
