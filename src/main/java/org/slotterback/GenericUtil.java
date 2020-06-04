@@ -15,7 +15,12 @@ public class GenericUtil {
 
     public static void putEmbeddedValue(Map<String, Object> map, String target, Object value){
         List keys = new LinkedList(Arrays.asList(target.split("_")));
-        Object ref = map.get(keys.remove(0));
+        String entry = keys.remove(0).toString();
+        Object ref = map.get(entry);
+        if(ref == null){
+            map.put(entry, new LinkedHashMap<>());
+            ref = map.get(entry);
+        }
         while (keys.size() > 0){
             Object key = keys.remove(0);
             Map tmpRef = ((Map) ref);

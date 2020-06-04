@@ -36,12 +36,9 @@ public class AvroDeserializationSchema extends GenericDeserializationSchema {
     }
 
     @Override
-    public boolean isEndOfStream(Map<String, Object> nextElement) {
-        return false;
-    }
-
-    @Override
-    public TypeInformation<Map<String, Object>> getProducedType() {
-        return null;
+    public void setSchema(String schemaFile) {
+        try {
+            this.schema = new Schema.Parser().parse(new File(schemaFile));
+        } catch (IOException e) { }
     }
 }

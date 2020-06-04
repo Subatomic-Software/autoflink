@@ -15,14 +15,4 @@ public class JsonDeserializationSchema extends GenericDeserializationSchema {
     public Map<String, Object> deserialize(byte[] message) throws IOException {
         return mapper.readValue(new String(message), HashMap.class);
     }
-
-    @Override
-    public boolean isEndOfStream(Map<String, Object> nextElement) {
-        return false;
-    }
-
-    @Override
-    public TypeInformation<Map<String, Object>> getProducedType() {
-        return null;
-    }
 }

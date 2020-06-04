@@ -8,15 +8,14 @@ import org.slotterback.SerDes.GenericDeserializationSchema;
 
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 public class KafkaSource extends GenericSource{
 
     private DataStreamSource source;
 
     public KafkaSource(StreamExecutionEnvironment env, Map schemas, Map config) {
-        Properties properties = new Properties();
 
+        Properties properties = new Properties();
         String schema = null;
         try {
             schema = config.get("schema").toString();

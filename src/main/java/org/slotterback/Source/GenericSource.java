@@ -17,6 +17,8 @@ public abstract class GenericSource {
 
         if(type.equals("kafka")){
             return new KafkaSource(env, schemas, config);
+        }if(type.equals("file")){
+            return new FileSource(env, schemas, config);
         }
         return null;
     }

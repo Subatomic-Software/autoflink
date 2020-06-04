@@ -1,4 +1,18 @@
 {
+  "fileSource1": {
+    "function": "source",
+    "type": "file",
+    "file": {
+      "directory": "/home/slots/IdeaProjects/autoflink/test/inputfiles/",
+      "format": "csv",
+      "schema": "value,embed_value,embed_embed_value,val1,val2,val3"
+    },
+    "print3": {
+      "function": "sink",
+      "type": "print",
+      "print": {}
+    }
+  },
   "kafkaSource1": {
     "function": "source",
     "type": "kafka",
