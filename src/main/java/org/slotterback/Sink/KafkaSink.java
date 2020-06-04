@@ -7,24 +7,22 @@ import org.slotterback.SerDes.KafkaGenericSerializationSchema;
 
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 public class KafkaSink extends GenericSink{
-    public KafkaSink(StreamExecutionEnvironment env, Set<String> keys, Map streamBuilder, Map schemas, SingleOutputStreamOperator stream) {
+    public KafkaSink(Map schemas, SingleOutputStreamOperator stream, Map config) {
         Properties properties = new Properties();
-        Map kafka = (Map) streamBuilder.get("kafka");
 
         String schema = null;
         try {
-            schema = kafka.get("schema").toString();
+            schema = config.get("schema").toString();
         } catch (Exception e){ }
         String format = null;
         try {
-            format = kafka.get("format").toString();
+            format = config.get("format").toString();
         } catch (Exception e){ }
 
-        String broker = kafka.get("broker").toString();
-        String topic = kafka.get("topic").toString();
+        String broker = config.get("broker").toString();
+        String topic = config.get("topic").toString();
 
         properties.setProperty("bootstrap.servers", broker);
 

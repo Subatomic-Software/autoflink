@@ -1,23 +1,40 @@
 {
-  "kafkaSource": {
+  "kafkaSource1": {
+    "function": "source",
+    "type": "kafka",
     "kafka": {
       "broker": "localhost:9092",
       "topic": "tester",
       "groupid": "test",
       "format": "json"
     },
-    "map": {
-      "func": {
-        "op": "calc",
+    "map1": {
+      "function": "operator",
+      "type": "map",
+      "map": {
+        "operation": "calc",
         "target": "embedder_embedder_embedder_target",
         "eval": "(embedder_embedded+40+value^(7)*embedder_embedder_embedded)/embedder_embedded"
       },
-      "print": {
-        "name": "filter1"
+      "print1": {
+        "function": "sink",
+        "type": "print",
+        "print": {}
+      },
+      "kafkaSink1": {
+        "function": "sink",
+        "type": "kafka",
+        "kafka": {
+          "broker": "localhost:9092",
+          "topic": "testerout",
+          "format": "json"
+        }
       }
     },
-    "print": {
-      "name": "filter1"
+    "print2": {
+      "function": "sink",
+      "type": "print",
+      "print": {}
     }
   }
 }

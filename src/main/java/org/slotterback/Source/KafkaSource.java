@@ -14,22 +14,21 @@ public class KafkaSource extends GenericSource{
 
     private DataStreamSource source;
 
-    public KafkaSource(StreamExecutionEnvironment env, Set<String> keys, Map streamBuilder, Map schemas) {
+    public KafkaSource(StreamExecutionEnvironment env, Map schemas, Map config) {
         Properties properties = new Properties();
-        Map kafka = (Map) streamBuilder.get("kafka");
 
         String schema = null;
         try {
-            schema = kafka.get("schema").toString();
+            schema = config.get("schema").toString();
         } catch (Exception e){ }
         String format = null;
         try {
-            format = kafka.get("format").toString();
+            format = config.get("format").toString();
         } catch (Exception e){ }
 
-        String broker = kafka.get("broker").toString();
-        String groupId = kafka.get("groupid").toString();
-        String topic = kafka.get("topic").toString();
+        String broker = config.get("broker").toString();
+        String groupId = config.get("groupid").toString();
+        String topic = config.get("topic").toString();
 
         properties.setProperty("bootstrap.servers", broker);
         properties.setProperty("group.id", groupId);

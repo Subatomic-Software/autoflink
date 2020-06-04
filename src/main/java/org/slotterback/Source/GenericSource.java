@@ -4,15 +4,19 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import java.util.Map;
-import java.util.Set;
 
 public abstract class GenericSource {
     public abstract SingleOutputStreamOperator<Map> getSourceStream();
 
-    public final static GenericSource sourceBuilder(String entry, Map streamBuilder, Set<String> keys, Map schemas, StreamExecutionEnvironment env){
+    public final static GenericSource sourceBuilder(StreamExecutionEnvironment env,
+                                                    Map schemas,
+                                                    SingleOutputStreamOperator stream,
+                                                    String name,
+                                                    String type,
+                                                    Map config){
 
-        if(entry.equals("kafkaSource")){
-            return new KafkaSource(env, keys, streamBuilder, schemas);
+        if(type.equals("kafka")){
+            return new KafkaSource(env, schemas, config);
         }
         return null;
     }

@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
-public class FilterFunction extends GenericFunction{
+public class FilterOperator extends GenericOperator {
 
     private interface DynamicCompare extends Serializable {
         Boolean compare(Object obj1, Object obj2);
@@ -17,7 +17,7 @@ public class FilterFunction extends GenericFunction{
 
     private SingleOutputStreamOperator stream;
 
-    public FilterFunction(StreamExecutionEnvironment env, Set<String> keys, SingleOutputStreamOperator stream, Map streamBuilder) {
+    public FilterOperator(StreamExecutionEnvironment env, SingleOutputStreamOperator stream, Map config) {
 
         //TODO compare doubles to self values?
         DynamicCompare eqCompare = (obj1, obj2) -> { return obj1.equals(obj2); };
@@ -25,10 +25,9 @@ public class FilterFunction extends GenericFunction{
         DynamicCompare ltCompare = (obj1, obj2) -> { return (Double) obj1 < (Double) obj2; };
         DynamicCompare gtCompare = (obj1, obj2) -> { return (Double) obj1 > (Double) obj2; };
 
-        Map conf = (Map) streamBuilder.get("func");
-        final String field = conf.get("field").toString();
-        String comp = conf.get("comp").toString();
-        Object val = conf.get("val").toString();
+        final String field = config.get("field").toString();
+        String comp = config.get("comp").toString();
+        Object val = config.get("val").toString();
         try {
             val = Double.valueOf((String) val);
         }catch (NumberFormatException e){}
@@ -46,8 +45,6 @@ public class FilterFunction extends GenericFunction{
         }else{
             compare = null;
         }
-
-        keys.remove("func");
 
         stream = stream.filter(new RichFilterFunction<Map>() {
             @Override

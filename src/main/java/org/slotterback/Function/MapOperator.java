@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MapFunction extends GenericFunction{
+public class MapOperator extends GenericOperator {
 
     private SingleOutputStreamOperator stream;
 
@@ -20,7 +20,7 @@ public class MapFunction extends GenericFunction{
         Map run(Map map, Expression expression, List<String> vars, String target);
     }
 
-    public MapFunction(StreamExecutionEnvironment env, Set<String> keys, SingleOutputStreamOperator stream, Map streamBuilder) {
+    public MapOperator(StreamExecutionEnvironment env, Map schemas, SingleOutputStreamOperator stream, String name, String type, Map config) {
 
         Map<String, MapOperations> mapOperations = new HashMap<>();
         mapOperations.put("calc", (Map map, Expression expression, List<String> vars, String target)
@@ -30,20 +30,19 @@ public class MapFunction extends GenericFunction{
         mapOperations.put("replace", (Map map, Expression expression, List<String> vars, String target)
                 -> replace(map, vars, target));
 
-        Map conf = (Map) streamBuilder.get("func");
-        final String operation = conf.get("op").toString();
-        final String target = conf.get("target").toString();
+        final String operation = config.get("operation").toString();
+        final String target = config.get("target").toString();
 
         List<String> varList = new ArrayList<>();
         String evalFunc = "0";
         if(operation.equals("calc")) {
 
-            evalFunc = conf.get("eval").toString();
+            evalFunc = config.get("eval").toString();
             String regex = "[\\!|\\%|\\^|\\&|\\*|\\(|\\)|\\+|\\-|\\/]";
-            String[] evals = evalFunc.split(regex);
+            String[] vars = evalFunc.split(regex);
 
             varList = Arrays
-                    .stream(evals)
+                    .stream(vars)
                     .distinct()
                     .filter(str -> !str.equals(""))
                     .filter(str -> {
@@ -56,7 +55,7 @@ public class MapFunction extends GenericFunction{
                     })
                     .collect(Collectors.toList());
         }else if(operation.equals("replace")){
-            varList.add(conf.get("value").toString());
+            varList.add(config.get("value").toString());
         }
 
         final String finalEvalFunc = evalFunc;

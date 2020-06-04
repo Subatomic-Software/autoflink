@@ -4,17 +4,21 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import java.util.Map;
-import java.util.Set;
 
 public abstract class GenericSink {
 
-    public final static GenericSink sinkBuilder(String entry, Map streamBuilder, Set<String> keys, Map schemas, StreamExecutionEnvironment env, SingleOutputStreamOperator stream){
+    public final static GenericSink sinkBuilder(StreamExecutionEnvironment env,
+                                                Map schemas,
+                                                SingleOutputStreamOperator stream,
+                                                String name,
+                                                String type,
+                                                Map config){
 
         //todo runnables
-        if(entry.equals("kafkaSink")){
-            return new KafkaSink(env, keys, streamBuilder, schemas, stream);
-        }else if(entry.equals("print")){
-            return new PrintSink(stream);
+        if(type.equals("kafka")){
+            return new KafkaSink(schemas, stream, config);
+        }else if(type.equals("print")){
+            return new PrintSink(stream, name);
         }
         return null;
     }
