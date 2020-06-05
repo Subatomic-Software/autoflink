@@ -8,12 +8,11 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.FileProcessingMode;
-import org.slotterback.SerDes.CsvDeserializationSchema;
 import org.slotterback.SerDes.GenericDeserializationSchema;
+import org.slotterback.StreamBuilderUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,15 +24,13 @@ public class FileSource extends GenericSource {
 
     public FileSource(StreamExecutionEnvironment env, Map schemas, Map config) {
 
-        String schema = null;
-        try {
-            schema = config.get("schema").toString();
-        } catch (Exception e){ }
-        final String finalSchema = schema;
-        String format = config.get("format").toString();
-        String directory = config.get("directory").toString();
+        Map format = StreamBuilderUtil.Generic.Source.FileSource.getFormat(config);
+        String type = StreamBuilderUtil.Generic.Source.FileSource.Format.getType(format);
+        String schema = StreamBuilderUtil.Generic.Source.FileSource.Format.getSchema(format);
 
-        final GenericDeserializationSchema deserializer = GenericDeserializationSchema.getDeserializationSchema(format, schema);
+        String directory = StreamBuilderUtil.Generic.Source.FileSource.getDirectory(config);
+
+        final GenericDeserializationSchema deserializer = GenericDeserializationSchema.getDeserializationSchema(type, schema);
 
 
         DelimitedInputFormat inputFormat = new DelimitedInputFormat() {
@@ -44,7 +41,7 @@ public class FileSource extends GenericSource {
             @Override
             public void open(FileInputSplit split) throws IOException {
                 super.open(split);
-                if(finalSchema == null && !format.equals("json")){
+                if(schema == null && !format.equals("json")){
                     schemaHeader = true;
                     String schema = Files.lines(Paths.get(split.getPath().getPath()))
                             .findFirst()
@@ -56,8 +53,8 @@ public class FileSource extends GenericSource {
 
             @Override
             public Object readRecord(Object reuse, byte[] bytes, int offset, int numBytes) throws IOException {
-                if(offset == 0 && finalSchema == null && !format.equals("json") ||
-                        offset == 0 && finalSchema != null && finalSchema.equals(new String(bytes, offset, numBytes))){
+                if(offset == 0 && schema == null && !format.equals("json") ||
+                        offset == 0 && schema != null && schema.equals(new String(bytes, offset, numBytes))){
                     return new HashMap<>();
                 }
                 byte[] report = Arrays.copyOfRange(bytes, offset, offset+numBytes);

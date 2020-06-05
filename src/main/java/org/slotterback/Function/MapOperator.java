@@ -7,6 +7,7 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slotterback.GenericUtil;
+import org.slotterback.StreamBuilderUtil;
 
 import java.io.Serializable;
 import java.util.*;
@@ -30,35 +31,28 @@ public class MapOperator extends GenericOperator {
         mapOperations.put("replace", (Map map, Expression expression, List<String> vars, String target)
                 -> replace(map, vars, target));
 
-        final String operation = config.get("operation").toString();
-        final String target = config.get("target").toString();
+        String operation = StreamBuilderUtil.Generic.Function.MapOperator.getOperation(config);
+        String target = StreamBuilderUtil.Generic.Function.MapOperator.getTarget(config);
+        String eval = StreamBuilderUtil.Generic.Function.MapOperator.getEval(config);
 
         List<String> varList = new ArrayList<>();
-        String evalFunc = "0";
-        if(operation.equals("calc")) {
-
-            evalFunc = config.get("eval").toString();
+        String evalFunction = "0";
+        if(eval != null) {
+            evalFunction = eval;
             String regex = "[\\!|\\%|\\^|\\&|\\*|\\(|\\)|\\+|\\-|\\/]";
-            String[] vars = evalFunc.split(regex);
+            String[] vars = evalFunction.split(regex);
 
             varList = Arrays
                     .stream(vars)
                     .distinct()
                     .filter(str -> !str.equals(""))
-                    .filter(str -> {
-                        try{
-                            Double.valueOf(str);
-                        } catch (Exception e){
-                            return true;
-                        }
-                        return false;
-                    })
+                    .filter(str -> { try{ Double.valueOf(str); } catch (Exception e){ return true; } return false; })
                     .collect(Collectors.toList());
         }else if(operation.equals("replace")){
-            varList.add(config.get("value").toString());
+            varList.add(target);
         }
 
-        final String finalEvalFunc = evalFunc;
+        final String finalEvalFunc = evalFunction;
         final List<String> finalVars = varList;
 
         stream = stream.map(new RichMapFunction<Map<Object, Object>, Map<Object, Object>>() {

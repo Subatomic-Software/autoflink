@@ -4,13 +4,30 @@
     "type": "file",
     "file": {
       "directory": "/home/slots/IdeaProjects/autoflink/test/inputfiles/",
-      "format": "csv",
-      "schema": "value,embed_value,embed_embed_value,val1,val2,val3"
+      "format": {
+        "type": "csv",
+        "schema": "value,embed_value,embed_embed_value,val1,val2,val3"
+      }
     },
-    "print3": {
-      "function": "sink",
-      "type": "print",
-      "print": {}
+    "filter2": {
+      "function": "operator",
+      "type": "filter",
+      "filter": {
+        "function": "lt",
+        "value": "val1",
+        "target": 4
+      },
+      "kafkaSink2": {
+        "function": "sink",
+        "type": "kafka",
+        "kafka": {
+          "broker": "localhost:9092",
+          "topic": "testerout",
+          "format": {
+            "type": "json"
+          }
+        }
+      }
     }
   },
   "kafkaSource1": {
@@ -18,9 +35,11 @@
     "type": "kafka",
     "kafka": {
       "broker": "localhost:9092",
-      "topic": "tester",
-      "groupid": "test",
-      "format": "json"
+      "topic": "testerin",
+      "groupId": "test",
+      "format": {
+        "type": "json"
+      }
     },
     "map1": {
       "function": "operator",
@@ -41,7 +60,9 @@
         "kafka": {
           "broker": "localhost:9092",
           "topic": "testerout",
-          "format": "json"
+          "format": {
+            "type": "json"
+          }
         }
       }
     },
