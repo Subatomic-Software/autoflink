@@ -2,9 +2,9 @@ package org.slotterback;
 
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.slotterback.Function.GenericOperator;
-import org.slotterback.Sink.GenericSink;
-import org.slotterback.Source.GenericSource;
+import org.slotterback.operator.GenericOperator;
+import org.slotterback.sink.GenericSink;
+import org.slotterback.source.GenericSource;
 
 import java.util.*;
 

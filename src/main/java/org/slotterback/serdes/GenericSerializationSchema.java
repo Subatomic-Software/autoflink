@@ -1,4 +1,4 @@
-package org.slotterback.SerDes;
+package org.slotterback.serdes;
 
 public abstract class GenericSerializationSchema {
 

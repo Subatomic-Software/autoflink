@@ -81,7 +81,7 @@ public class StreamBuilderUtil {
             }
         }
 
-        public static class Function{
+        public static class Operation{
 
             public static class FilterOperator{
                 public static String target = "target";

@@ -1,6 +1,5 @@
-package org.slotterback.SerDes;
+package org.slotterback.serdes;
 
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.slotterback.GenericUtil;
 
 import java.io.IOException;

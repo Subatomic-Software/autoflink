@@ -1,4 +1,4 @@
-package org.slotterback.SerDes;
+package org.slotterback.serdes;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumWriter;

@@ -1,7 +1,6 @@
-package org.slotterback.SerDes;
+package org.slotterback.serdes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 
 import java.io.IOException;
 import java.util.HashMap;

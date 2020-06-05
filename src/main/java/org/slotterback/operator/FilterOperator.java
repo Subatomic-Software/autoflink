@@ -1,4 +1,4 @@
-package org.slotterback.Function;
+package org.slotterback.operator;
 
 import org.apache.flink.api.common.functions.RichFilterFunction;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -24,9 +24,9 @@ public class FilterOperator extends GenericOperator {
 
     public FilterOperator(StreamExecutionEnvironment env, SingleOutputStreamOperator stream, Map config) {
 
-        String function = StreamBuilderUtil.Generic.Function.FilterOperator.getFunction(config);
-        String value = StreamBuilderUtil.Generic.Function.FilterOperator.getValue(config);
-        Object target = StreamBuilderUtil.Generic.Function.FilterOperator.getTarget(config);
+        String function = StreamBuilderUtil.Generic.Operation.FilterOperator.getFunction(config);
+        String value = StreamBuilderUtil.Generic.Operation.FilterOperator.getValue(config);
+        Object target = StreamBuilderUtil.Generic.Operation.FilterOperator.getTarget(config);
 
         final DynamicFunction dynamicFunction;
         if(function.equals("eq")){

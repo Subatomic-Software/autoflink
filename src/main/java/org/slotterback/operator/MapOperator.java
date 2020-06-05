@@ -1,4 +1,4 @@
-package org.slotterback.Function;
+package org.slotterback.operator;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -31,9 +31,9 @@ public class MapOperator extends GenericOperator {
         mapOperations.put("replace", (Map map, Expression expression, List<String> vars, String target)
                 -> replace(map, vars, target));
 
-        String operation = StreamBuilderUtil.Generic.Function.MapOperator.getOperation(config);
-        String target = StreamBuilderUtil.Generic.Function.MapOperator.getTarget(config);
-        String eval = StreamBuilderUtil.Generic.Function.MapOperator.getEval(config);
+        String operation = StreamBuilderUtil.Generic.Operation.MapOperator.getOperation(config);
+        String target = StreamBuilderUtil.Generic.Operation.MapOperator.getTarget(config);
+        String eval = StreamBuilderUtil.Generic.Operation.MapOperator.getEval(config);
 
         List<String> varList = new ArrayList<>();
         String evalFunction = "0";

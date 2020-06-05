@@ -1,11 +1,10 @@
-package org.slotterback.SerDes;
+package org.slotterback.serdes;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.DecoderFactory;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 
 import java.io.File;
 import java.io.IOException;

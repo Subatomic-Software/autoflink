@@ -1,4 +1,4 @@
-package org.slotterback.Sink;
+package org.slotterback.sink;
 
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 

@@ -1,9 +1,8 @@
-package org.slotterback.SerDes;
+package org.slotterback.serdes;
 
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
