@@ -1,6 +1,7 @@
 # autoflink
 
-####Sources:
+#### Sources:  
+
 KafkaSource:  
 "function": "source",
 "type": "kafka",  
@@ -25,7 +26,7 @@ FileSource:
   }  
 }  
 
-####Operations:
+#### Operations:  
 Map:  
 "function": "operator",  
 "type": "map",  
@@ -44,7 +45,7 @@ Filter:
   "target": String|Numeric  
 }
 
-####Sinks:  
+#### Sinks:  
 KafkaSink:  
 "function": "sink",  
 "type": "kafka",  
@@ -62,7 +63,7 @@ Print:
 "type": "print",
 "print": {}
 
-#TODO:  
+## TODO:  
 
 p0  
 params  
