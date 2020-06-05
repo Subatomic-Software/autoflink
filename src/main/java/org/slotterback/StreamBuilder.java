@@ -25,8 +25,8 @@ public class StreamBuilder {
 
     private void buildStream(String entry, Map streamBuilder, SingleOutputStreamOperator stream){
 
-        String function = StreamBuilderUtil.Generic.getFunction(streamBuilder);
-        String type = StreamBuilderUtil.Generic.getType(streamBuilder);
+        String function = StreamBuilderUtil.Base.getFunction(streamBuilder);
+        String type = StreamBuilderUtil.Base.getType(streamBuilder);
         Map config = (Map) streamBuilder.remove(type);
 
         if(function.equals("source")){

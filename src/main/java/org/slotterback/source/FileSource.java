@@ -24,11 +24,11 @@ public class FileSource extends GenericSource {
 
     public FileSource(StreamExecutionEnvironment env, Map schemas, Map config) {
 
-        Map format = StreamBuilderUtil.Generic.Source.FileSource.getFormat(config);
-        String type = StreamBuilderUtil.Generic.Source.FileSource.Format.getType(format);
-        String schema = StreamBuilderUtil.Generic.Source.FileSource.Format.getSchema(format);
+        Map format = StreamBuilderUtil.Base.Source.FileSource.getFormat(config);
+        String type = StreamBuilderUtil.Base.Source.FileSource.Format.getType(format);
+        String schema = StreamBuilderUtil.Base.Source.FileSource.Format.getSchema(format);
 
-        String directory = StreamBuilderUtil.Generic.Source.FileSource.getDirectory(config);
+        String directory = StreamBuilderUtil.Base.Source.FileSource.getDirectory(config);
 
         final GenericDeserializationSchema deserializer = GenericDeserializationSchema.getDeserializationSchema(type, schema);
 

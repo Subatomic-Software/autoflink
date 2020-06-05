@@ -24,9 +24,9 @@ public class FilterOperator extends GenericOperator {
 
     public FilterOperator(StreamExecutionEnvironment env, SingleOutputStreamOperator stream, Map config) {
 
-        String function = StreamBuilderUtil.Generic.Operation.FilterOperator.getFunction(config);
-        String value = StreamBuilderUtil.Generic.Operation.FilterOperator.getValue(config);
-        Object target = StreamBuilderUtil.Generic.Operation.FilterOperator.getTarget(config);
+        String function = StreamBuilderUtil.Base.Operator.FilterOperator.getFunction(config);
+        String value = StreamBuilderUtil.Base.Operator.FilterOperator.getValue(config);
+        Object target = StreamBuilderUtil.Base.Operator.FilterOperator.getTarget(config);
 
         final DynamicFunction dynamicFunction;
         if(function.equals("eq")){
@@ -49,7 +49,6 @@ public class FilterOperator extends GenericOperator {
                     compVal = Double.valueOf(compVal.toString());
                 } catch (Exception e) {}
 
-                Thread.sleep(10000);
                 System.out.println(dynamicFunction.compare(compVal, target));
                 return dynamicFunction.compare(compVal, target);
             }

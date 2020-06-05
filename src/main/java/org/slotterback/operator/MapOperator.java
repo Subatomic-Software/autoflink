@@ -31,9 +31,9 @@ public class MapOperator extends GenericOperator {
         mapOperations.put("replace", (Map map, Expression expression, List<String> vars, String target)
                 -> replace(map, vars, target));
 
-        String operation = StreamBuilderUtil.Generic.Operation.MapOperator.getOperation(config);
-        String target = StreamBuilderUtil.Generic.Operation.MapOperator.getTarget(config);
-        String eval = StreamBuilderUtil.Generic.Operation.MapOperator.getEval(config);
+        String operation = StreamBuilderUtil.Base.Operator.MapOperator.getOperation(config);
+        String target = StreamBuilderUtil.Base.Operator.MapOperator.getTarget(config);
+        String eval = StreamBuilderUtil.Base.Operator.MapOperator.getEval(config);
 
         List<String> varList = new ArrayList<>();
         String evalFunction = "0";

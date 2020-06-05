@@ -16,13 +16,13 @@ public class KafkaSource extends GenericSource{
 
     public KafkaSource(StreamExecutionEnvironment env, Map schemas, Map config) {
 
-        Map format = StreamBuilderUtil.Generic.Source.KafkaSource.getFormat(config);
-        String type = StreamBuilderUtil.Generic.Source.KafkaSource.Format.getType(format);
-        String schema = StreamBuilderUtil.Generic.Source.KafkaSource.Format.getSchema(format);
+        Map format = StreamBuilderUtil.Base.Source.KafkaSource.getFormat(config);
+        String type = StreamBuilderUtil.Base.Source.KafkaSource.Format.getType(format);
+        String schema = StreamBuilderUtil.Base.Source.KafkaSource.Format.getSchema(format);
 
-        String broker = StreamBuilderUtil.Generic.Source.KafkaSource.getBroker(config);
-        String groupId = StreamBuilderUtil.Generic.Source.KafkaSource.getGroupId(config);
-        String topic = StreamBuilderUtil.Generic.Source.KafkaSource.getTopic(config);
+        String broker = StreamBuilderUtil.Base.Source.KafkaSource.getBroker(config);
+        String groupId = StreamBuilderUtil.Base.Source.KafkaSource.getGroupId(config);
+        String topic = StreamBuilderUtil.Base.Source.KafkaSource.getTopic(config);
 
         Properties properties = new Properties();
 

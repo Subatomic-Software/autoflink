@@ -1,10 +1,19 @@
 package org.slotterback;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class StreamBuilderUtil {
 
-    public static class Generic {
+    private static ArrayList formats = new ArrayList(){{
+       add("json");
+       add("avro");
+       add("csv");
+    }};
+
+    public static class Base {
         public static String function = "function";
         public static String type = "type";
 
@@ -16,12 +25,22 @@ public class StreamBuilderUtil {
         }
 
         public static class Source{
+            public static String name = "source";
 
             public static class KafkaSource{
+                public static String name = "kafka";
+
                 public static String broker = "broker";
                 public static String topic = "topic";
                 public static String groupId = "groupId";
                 public static String format = "format";
+
+                public static List req = new ArrayList(){{
+                    add(broker);
+                    add(topic);
+                    add(groupId);
+                    add(format);
+                }};
 
                 public static String getBroker(Map map){
                     return map.remove(broker).toString();
@@ -34,8 +53,13 @@ public class StreamBuilderUtil {
                 }
 
                 public static class Format{
+                    public static String name = "format";
+
                     public static String type = "type";
                     public static String schema = "schema";
+
+                    public static Map allowed = new HashMap(){{ put("type", formats); }};
+                    public static List req = new ArrayList(){{ add("type"); }};
 
                     public static String getType(Map map) {
                         return map.remove(type).toString();
@@ -53,8 +77,15 @@ public class StreamBuilderUtil {
                 }
             }
             public static class FileSource{
+                public static String name = "file";
+
                 public static String directory = "directory";
                 public static String format = "format";
+
+                public static List req = new ArrayList(){{
+                    add(directory);
+                    add(format);
+                }};
 
                 public static String getDirectory(Map map){
                     return map.remove(directory).toString();
@@ -64,8 +95,13 @@ public class StreamBuilderUtil {
                 }
 
                 public static class Format{
+                    public static String name = "format";
+
                     public static String type = "type";
                     public static String schema = "schema";
+
+                    public static Map allowed = new HashMap(){{ put("type", formats); }};
+                    public static List req = new ArrayList(){{ add("type"); }};
 
                     public static String getType(Map map) {
                         return map.remove(type).toString();
@@ -81,12 +117,25 @@ public class StreamBuilderUtil {
             }
         }
 
-        public static class Operation{
+        public static class Operator{
+            public static String name = "operation";
 
             public static class FilterOperator{
+                public static String name = "filter";
+
                 public static String target = "target";
                 public static String function = "function";
                 public static String value = "value";
+
+                public static List req = new ArrayList(){{
+                    add(target);
+                    add(function);
+                    add(value);
+                }};
+
+                public static Map allowed = new HashMap(){{
+                   put(function, new String[]{"==", "!=", "<", ">"});
+                }};
 
                 public static String getFunction(Map map){
                     return map.remove(function).toString();
@@ -104,9 +153,20 @@ public class StreamBuilderUtil {
                 }
             }
             public static class MapOperator{
+                public static String name = "map";
+
                 public static String operation = "operation";
                 public static String target = "target";
                 public static String eval = "eval";
+
+                public static List req = new ArrayList(){{
+                    add(operation);
+                    add(target);
+                }};
+
+                public static Map allowed = new HashMap(){{
+                    put(operation, new String[]{"calc", "remove", "replace"});
+                }};
 
                 public static String getOperation(Map map){
                     return map.remove(operation).toString();
@@ -125,11 +185,20 @@ public class StreamBuilderUtil {
         }
 
         public static class Sink{
+            public static String name = "sink";
 
             public static class KafkaSink{
+                public static String name = "kafka";
+
                 public static String broker = "broker";
                 public static String topic = "topic";
                 public static String format = "format";
+
+                public static List req = new ArrayList(){{
+                    add(broker);
+                    add(topic);
+                    add(format);
+                }};
 
                 public static String getBroker(Map map){
                     return map.remove(broker).toString();
@@ -142,8 +211,13 @@ public class StreamBuilderUtil {
                 }
 
                 public static class Format{
+                    public static String name = "format";
+
                     public static String type = "type";
                     public static String schema = "schema";
+
+                    public static Map allowed = new HashMap(){{ put("type", formats); }};
+                    public static List req = new ArrayList(){{ add("type"); }};
 
                     public static String getType(Map map) {
                         return map.remove(type).toString();
@@ -158,7 +232,9 @@ public class StreamBuilderUtil {
                 }
             }
 
-            public static class PrintSink{}
+            public static class PrintSink{
+                public static String name = "print";
+            }
         }
     }
 

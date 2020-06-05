@@ -11,12 +11,12 @@ import java.util.Properties;
 public class KafkaSink extends GenericSink{
     public KafkaSink(Map schemas, SingleOutputStreamOperator stream, Map config) {
 
-        Map format = StreamBuilderUtil.Generic.Sink.KafkaSink.getFormat(config);
-        String type = StreamBuilderUtil.Generic.Sink.KafkaSink.Format.getType(format);
-        String schema = StreamBuilderUtil.Generic.Sink.KafkaSink.Format.getSchema(format);
+        Map format = StreamBuilderUtil.Base.Sink.KafkaSink.getFormat(config);
+        String type = StreamBuilderUtil.Base.Sink.KafkaSink.Format.getType(format);
+        String schema = StreamBuilderUtil.Base.Sink.KafkaSink.Format.getSchema(format);
 
-        String broker = StreamBuilderUtil.Generic.Sink.KafkaSink.getBroker(config);
-        String topic = StreamBuilderUtil.Generic.Sink.KafkaSink.getTopic(config);
+        String broker = StreamBuilderUtil.Base.Sink.KafkaSink.getBroker(config);
+        String topic = StreamBuilderUtil.Base.Sink.KafkaSink.getTopic(config);
 
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", broker);
