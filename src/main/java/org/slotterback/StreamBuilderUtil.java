@@ -1,5 +1,8 @@
 package org.slotterback;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -236,6 +239,61 @@ public class StreamBuilderUtil {
                 public static String name = "print";
             }
         }
+    }
+
+    public static String getOperatorJson(){
+        String json = "";
+        try {
+            StreamBuilderUtil streamBuilderUtil = new StreamBuilderUtil();
+            Class base = streamBuilderUtil.getClass().getClasses()[0];
+            Class[] baseClasses = base.getClasses();
+
+            Map baseFunctionMap = new HashMap();
+            for (Class clazz : baseClasses) {
+                Field[] tmp = clazz.getFields();
+                Class[] tmp2 = clazz.getClasses();
+                baseFunctionMap.put(tmp[0], tmp2);
+            }
+
+            Map operators = new HashMap();
+            for (Object clazzes : baseFunctionMap.keySet()) {
+                Map combined = new HashMap();
+                Map mapfields = null;
+                for (Class clazz : (Class[]) baseFunctionMap.get(clazzes)) {
+                    mapfields = new HashMap();
+                    Class[] subclazzes = clazz.getClasses();
+                    Field[] fields = clazz.getFields();
+                    for (Field field : fields) {
+                        mapfields.put(field.getName(), field.get("name"));
+                    }
+
+                    Map suboperators = new HashMap();
+                    for (Class subclazz : subclazzes) {
+                        Map mapsubfields = new HashMap();
+                        Field[] subfields = subclazz.getFields();
+                        for (Field subfield : subfields) {
+                            mapsubfields.put(subfield.getName(), subfield.get("name"));
+                        }
+                        suboperators.put(subclazz.getField("name").get("name"), mapsubfields);
+                    }
+                    for (Object suboperator : suboperators.keySet()) {
+                        Map suboperatormap = (Map) suboperators.get(suboperator);
+
+                        mapfields.put(suboperator.toString(), suboperatormap);
+                        int k = 0;
+                    }
+                    combined.put(clazz.getField("name").get("name"), mapfields);
+                    int i = 0;
+                }
+                operators.put(((Field) clazzes).get("name"), combined);
+            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            json = objectMapper.writeValueAsString(operators);
+        }catch (Exception e){
+            return "";
+        }
+        return json;
     }
 
 }

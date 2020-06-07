@@ -29,13 +29,13 @@ public class FilterOperator extends GenericOperator {
         Object target = StreamBuilderUtil.Base.Operator.FilterOperator.getTarget(config);
 
         final DynamicFunction dynamicFunction;
-        if(function.equals("eq")){
+        if(function.equals("==")){
             dynamicFunction = eqCompare;
-        }else if(function.equals("neq")){
+        }else if(function.equals("!=")){
             dynamicFunction = neqCompare;
-        }else if(function.equals("lt")){
+        }else if(function.equals("<")){
             dynamicFunction = ltCompare;
-        }else if(function.equals("gt")){
+        }else if(function.equals(">")){
             dynamicFunction = gtCompare;
         }else{
             dynamicFunction = null;

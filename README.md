@@ -65,6 +65,7 @@ Print:
 #TODO:  
 
 p0  
+file sink  
 params  
 regex filter  
 cleanup if blocks/imports  
@@ -75,7 +76,7 @@ keyby+aggregation
 join  
 flatmap  
 multiple functions per function ie map ops  
-arrays in data
+arrays in data  
 
 p3  
 json validator  
