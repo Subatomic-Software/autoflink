@@ -1,6 +1,7 @@
-package org.slotterback.serdes;
+package org.slotterback.serdes.serialization.kafka;
 
 import org.apache.flink.streaming.connectors.kafka.KafkaSerializationSchema;
+import org.slotterback.serdes.serialization.GenericSerializationSchema;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,17 +15,24 @@ public abstract class KafkaGenericSerializationSchema extends GenericSerializati
     private static DynamicSerializationSchema none = (String schemaFile, String topic) -> null;
     private static DynamicSerializationSchema avro = (String schemaFile, String topic) -> new KafkaAvroSerializationSchema(schemaFile, topic);
     private static DynamicSerializationSchema json = (String schemaFile, String topic) -> new KafkaJsonSerializationSchema(topic);
+    private static DynamicSerializationSchema csv = (String schemaFile, String topic) -> new KafkaCsvSerializationSchema(topic);
 
     static Map<String, DynamicSerializationSchema> typeMap = new HashMap(){
         {
             put(null, none);
             put("avro", avro);
             put("json", json);
+            put("csv", csv);
         }
     };
 
     public static KafkaSerializationSchema getSerializationSchema(String format, String schemaFile, String topic) {
         return typeMap.get(format).getSerializationSchema(schemaFile, topic);
+    }
+
+    @Override
+    public byte[] serialize(Map<String, Object> element) {
+        return null;
     }
 
 }

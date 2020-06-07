@@ -39,9 +39,11 @@ public class StreamingJob {
 		String jsonFile = args[0];
 		String schema = args[1];
 		String schema2 = args[2];
+		String schema3 = args[3];
 		Map schemas = new HashMap<String, String>();
 		schemas.put("Tester", schema);
 		schemas.put("Tester2", schema2);
+		schemas.put("Tester3", schema3);
 		schemas.put(null, "");
 
 		ObjectMapper objectMapper = new ObjectMapper();

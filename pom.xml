@@ -100,18 +100,18 @@ under the License.
 
 
         <!-- boot -->
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>2.3.0.RELEASE</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-maven-plugin -->
+        https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-maven-plugin
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
             <version>2.3.0.RELEASE</version>
-        </dependency>
+        </dependency>-->
 
 
 
@@ -151,11 +151,11 @@ under the License.
                 </configuration>
             </plugin>
 
-            <!-- boot -->
+            <!-- boot
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
+            </plugin>-->
 
             <!-- We use the maven-shade plugin to create a fat jar that contains all necessary dependencies. -->
             <!-- Change the value of <mainClass>...</mainClass> if your program entry point changes. -->

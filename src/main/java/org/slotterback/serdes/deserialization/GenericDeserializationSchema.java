@@ -1,4 +1,4 @@
-package org.slotterback.serdes;
+package org.slotterback.serdes.deserialization;
 
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.api.common.typeinfo.TypeInformation;

@@ -1,4 +1,4 @@
-package org.slotterback.serdes;
+package org.slotterback.serdes.deserialization;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;

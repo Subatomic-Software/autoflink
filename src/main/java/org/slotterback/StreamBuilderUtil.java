@@ -235,6 +235,46 @@ public class StreamBuilderUtil {
                 }
             }
 
+            public static class FileSink{
+                public static String name = "file";
+
+                public static String directory = "directory";
+                public static String format = "format";
+
+                public static List req = new ArrayList(){{
+                    add(directory);
+                    add(format);
+                }};
+
+                public static String getDirectory(Map map){
+                    return map.remove(directory).toString();
+                }
+                public static Map getFormat(Map map){
+                    return (Map) map.remove(format);
+                }
+
+                public static class Format{
+                    public static String name = "format";
+
+                    public static String type = "type";
+                    public static String schema = "schema";
+
+                    public static Map allowed = new HashMap(){{ put("type", formats); }};
+                    public static List req = new ArrayList(){{ add("type"); }};
+
+                    public static String getType(Map map) {
+                        return map.remove(type).toString();
+                    }
+                    public static String getSchema(Map map){
+                        try{
+                            return map.remove(schema).toString();
+                        } catch (Exception e){
+                            return null;
+                        }
+                    }
+                }
+            }
+
             public static class PrintSink{
                 public static String name = "print";
             }

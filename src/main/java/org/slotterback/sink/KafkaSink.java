@@ -2,7 +2,7 @@ package org.slotterback.sink;
 
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
-import org.slotterback.serdes.KafkaGenericSerializationSchema;
+import org.slotterback.serdes.serialization.kafka.KafkaGenericSerializationSchema;
 import org.slotterback.StreamBuilderUtil;
 
 import java.util.Map;

@@ -13,7 +13,7 @@
       "function": "operator",
       "type": "filter",
       "filter": {
-        "function": "lt",
+        "function": "<",
         "value": "val1",
         "target": 4
       },
@@ -24,7 +24,25 @@
           "broker": "localhost:9092",
           "topic": "testerout",
           "format": {
-            "type": "json"
+            "type": "csv"
+          }
+        }
+      },
+      "map3": {
+        "function": "operator",
+        "type": "map",
+        "map": {
+          "operation": "remove",
+          "target": "embed"
+        },
+        "filesink1": {
+          "function": "sink",
+          "type": "file",
+          "file": {
+            "directory": "/home/slots/IdeaProjects/autoflink/test/outputfiles/",
+            "format": {
+              "type": "csv"
+            }
           }
         }
       }
@@ -35,7 +53,7 @@
     "type": "kafka",
     "kafka": {
       "broker": "localhost:9092",
-      "topic": "testerin",
+      "topic": "testerin1",
       "groupId": "test",
       "format": {
         "type": "json"

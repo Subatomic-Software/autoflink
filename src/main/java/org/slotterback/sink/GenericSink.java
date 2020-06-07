@@ -17,6 +17,8 @@ public abstract class GenericSink {
         //todo runnables
         if(type.equals("kafka")){
             return new KafkaSink(schemas, stream, config);
+        }else if(type.equals("file")){
+            return new FileSink(schemas, stream, name, config);
         }else if(type.equals("print")){
             return new PrintSink(stream, name);
         }

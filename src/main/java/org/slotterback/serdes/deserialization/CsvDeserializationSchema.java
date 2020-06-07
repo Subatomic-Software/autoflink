@@ -1,4 +1,4 @@
-package org.slotterback.serdes;
+package org.slotterback.serdes.deserialization;
 
 import org.slotterback.GenericUtil;
 
@@ -9,7 +9,6 @@ import java.util.Map;
 public class CsvDeserializationSchema extends GenericDeserializationSchema {
 
     private String[] schema;
-    private int values;
 
     public CsvDeserializationSchema(String schema) {
         if(schema == null){

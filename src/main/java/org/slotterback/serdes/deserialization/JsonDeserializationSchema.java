@@ -1,4 +1,4 @@
-package org.slotterback.serdes;
+package org.slotterback.serdes.deserialization;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
