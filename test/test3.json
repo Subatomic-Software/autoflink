@@ -53,7 +53,7 @@
     "type": "kafka",
     "kafka": {
       "broker": "localhost:9092",
-      "topic": "testerin1",
+      "topic": "testerin",
       "groupId": "test",
       "format": {
         "type": "json"
