@@ -157,7 +157,7 @@ function getOperator(name, subtype) {
 
     var editor = new Rete.NodeEditor('demo@0.1.0', container);
     editor.use(ConnectionPlugin.default);
-    editor.use(VueRenderPlugin.default);
+    //editor.use(VueRenderPlugin.default);
     editor.use(ContextMenuPlugin.default);
     editor.use(AreaPlugin);
     editor.use(CommentPlugin.default);
