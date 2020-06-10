@@ -1,43 +1,47 @@
 
 var jsonComponents = '{"sink":{"print":{"name":"print"},"file":{"name":"file","format":{"schema":"schema","allowed":{"type":["json","avro","csv"]},"name":"format","type":"type","req":["type"]},"directory":"directory","req":["directory","format"]},"kafka":{"name":"kafka","format":{"schema":"schema","allowed":{"type":["json","avro","csv"]},"name":"format","type":"type","req":["type"]},"topic":"topic","broker":"broker","req":["broker","topic","format"]}},"source":{"file":{"name":"file","format":{"schema":"schema","allowed":{"type":["json","avro","csv"]},"name":"format","type":"type","req":["type"]},"directory":"directory","req":["directory","format"]},"kafka":{"groupId":"groupId","name":"kafka","format":{"schema":"schema","allowed":{"type":["json","avro","csv"]},"name":"format","type":"type","req":["type"]},"topic":"topic","broker":"broker","req":["broker","topic","groupId","format"]}},"operation":{"filter":{"allowed":{"function":["==","!=","<",">"]},"function":"function","name":"filter","value":"value","target":"target","req":["target","function","value"]},"map":{"eval":"eval","allowed":{"operation":["calc","remove","replace"]},"name":"map","operation":"operation","target":"target","req":["operation","target"]}}}'
 var jsonObj = JSON.parse(jsonComponents)
-console.log(jsonObj)
+//console.log(jsonObj)
 
 var editor;
 
 function generateJson(){
     //console.log(editor.nodes);
-    nodes = editor.nodes;
-    nodesToJson = {};
-    nodesToId = {}
-    name = "";
+    var nodes = editor.nodes;
+    var nodesToJson = {};
+    var nodesToId = {}
+    var name = "";
     for(node in nodes){
         nodesToId[nodes[node].id] = nodes[node];
-        nodeObj = nodes[node];
+        var nodeObj = nodes[node];
         //console.log(nodeObj);
         //console.log(nodeObj._alight.children)
-        children = nodeObj._alight.children;
-        nodeMap = {};
-        embeddedJson = {};
+        var children = nodeObj._alight.children;
+        var nodeMap = {};
+        var embeddedJson = {};
         for(child in children){
-            control = children[child].locals.control
+            var control = children[child].locals.control;
+            //console.log("control");
+            //console.log(control);
             if(control != null){
                 //console.log(control.key+":"+control.msg);
                 if(control.key === "name"){
                     name = control.msg;
                 }else if(control.msg === "" || control.key === "name"){
-                    //console.log("EMPTY");
+                    //sockets, not inputs
                 }else if(control.key.includes(".")){
-                    split = control.key.split(".");
-                    key = split[1];
+                    var split = control.key.split(".");
+                    var key = split[1];
                     embeddedJson[split[0]] = Object.assign({}, embeddedJson[split[0]], {[key]: control.msg});
                 }else{
                     nodeMap[control.key] = control.msg
                 }
             }
         }
-        console.log(nodeObj);
-        split = nodeObj.name.split(":");
+
+        //console.log("name:"+name)
+        //console.log(nodeObj);
+        var split = nodeObj.name.split(":");
         for(embed in embeddedJson){
             nodeMap[embed] = embeddedJson[embed];
         }
@@ -48,62 +52,53 @@ function generateJson(){
         }
         nodeMap["function"] = split[0];
         nodeMap["type"] = split[1];
-        console.log("name:"+name)
         nodeMap = {[name]: nodeMap}
         nodesToJson[nodeObj.id] = nodeMap
         //console.log(JSON.stringify(nodeMap));
-
     }
+    //console.log(JSON.stringify(nodesToJson));
 
-    console.log(JSON.stringify(nodesToJson));
-
-
-    jsonMap = {};
+    var jsonMap = {};
     for(nodeId in nodesToJson){
-        node = nodesToJson[nodeId];
-        keys = Object.keys(node);
+        var node = nodesToJson[nodeId];
+        var keys = Object.keys(node);
         //console.log(node[keys[0]]["function"]);
         if(node[keys[0]]["function"] === "source"){
             //console.log(node[keys[0]]["function"]);
-
-            subNodesToJson = nodesToJson[nodeId];
-            subNodesToId = nodesToId[nodeId];
-
-
-            json = generateSubJson(subNodesToId, subNodesToJson, nodeId, nodesToId, nodesToJson);
-
-            die
-
+            var json = generateSubJson(nodeId, nodesToId, nodesToJson);
+            var keys = Object.keys(json);
+            jsonMap[keys[0]] = json[keys[0]];
         }
     }
 
-    die;
+    var finalJson = JSON.stringify(jsonMap);
+    console.log(finalJson);
+    return finalJson;
+
 }
 
-function generateSubJson(subNodesToId, subNodesToJson, id, nodesToId, nodesToJson){
-
+function generateSubJson(id, nodesToId, nodesToJson){
     var idString = JSON.stringify(nodesToId[id]);
     if(idString === undefined){
         idString = "";
     }
     var idStrings = idString.match(/"node":[0-9]{1,2},"input"/g);
     var ids = [];
-    for(id in idStrings){
-        ids.push(idStrings[id].replace(/[^0-9]+/g,''));
+    for(index in idStrings){
+        ids.push(idStrings[index].replace(/[^0-9]+/g,''));
     }
-
     if(ids.length == 0){
         return nodesToJson[id];
     }
-
-    var json = {}
-    for(id in ids){
-        var subJson = generateSubJson(subNodesToId, subNodesToJson, ids[id], nodesToId, nodesToJson)
-        var json = Object.assign({}, json, subJson);
+    var json = nodesToJson[id];
+    var keys = Object.keys(json);
+    for(index in ids){
+        var subJson = generateSubJson(ids[index], nodesToId, nodesToJson)
+        var subkeys = Object.keys(subJson);
+        json[keys[0]][subkeys[0]] = subJson[subkeys[0]];
         console.log(subJson);
     }
     return json;
-
 }
 
 //TODO get value to change inside object on update
