@@ -3,37 +3,139 @@ var jsonComponents = '{"sink":{"print":{"name":"print"},"file":{"name":"file","f
 var jsonObj = JSON.parse(jsonComponents)
 console.log(jsonObj)
 
+var editor;
+
+function generateJson(){
+    //console.log(editor.nodes);
+    nodes = editor.nodes;
+    nodesToJson = {};
+    nodesToId = {}
+    name = "";
+    for(node in nodes){
+        nodesToId[nodes[node].id] = nodes[node];
+        nodeObj = nodes[node];
+        //console.log(nodeObj);
+        //console.log(nodeObj._alight.children)
+        children = nodeObj._alight.children;
+        nodeMap = {};
+        embeddedJson = {};
+        for(child in children){
+            control = children[child].locals.control
+            if(control != null){
+                //console.log(control.key+":"+control.msg);
+                if(control.key === "name"){
+                    name = control.msg;
+                }else if(control.msg === "" || control.key === "name"){
+                    //console.log("EMPTY");
+                }else if(control.key.includes(".")){
+                    split = control.key.split(".");
+                    key = split[1];
+                    embeddedJson[split[0]] = Object.assign({}, embeddedJson[split[0]], {[key]: control.msg});
+                }else{
+                    nodeMap[control.key] = control.msg
+                }
+            }
+        }
+        console.log(nodeObj);
+        split = nodeObj.name.split(":");
+        for(embed in embeddedJson){
+            nodeMap[embed] = embeddedJson[embed];
+        }
+        for(node in nodeMap){
+            //console.log(node + " " + nodeMap[node]);
+            nodeMap[split[1]] = Object.assign({}, nodeMap[split[1]], {[node]: nodeMap[node]});
+            delete nodeMap[node];
+        }
+        nodeMap["function"] = split[0];
+        nodeMap["type"] = split[1];
+        console.log("name:"+name)
+        nodeMap = {[name]: nodeMap}
+        nodesToJson[nodeObj.id] = nodeMap
+        //console.log(JSON.stringify(nodeMap));
+
+    }
+
+    console.log(JSON.stringify(nodesToJson));
+
+
+    jsonMap = {};
+    for(nodeId in nodesToJson){
+        node = nodesToJson[nodeId];
+        keys = Object.keys(node);
+        //console.log(node[keys[0]]["function"]);
+        if(node[keys[0]]["function"] === "source"){
+            //console.log(node[keys[0]]["function"]);
+
+            subNodesToJson = nodesToJson[nodeId];
+            subNodesToId = nodesToId[nodeId];
+
+
+            json = generateSubJson(subNodesToId, subNodesToJson, nodeId, nodesToId, nodesToJson);
+
+            die
+
+        }
+    }
+
+    die;
+}
+
+function generateSubJson(subNodesToId, subNodesToJson, id, nodesToId, nodesToJson){
+
+    var idString = JSON.stringify(nodesToId[id]);
+    if(idString === undefined){
+        idString = "";
+    }
+    var idStrings = idString.match(/"node":[0-9]{1,2},"input"/g);
+    var ids = [];
+    for(id in idStrings){
+        ids.push(idStrings[id].replace(/[^0-9]+/g,''));
+    }
+
+    if(ids.length == 0){
+        return nodesToJson[id];
+    }
+
+    var json = {}
+    for(id in ids){
+        var subJson = generateSubJson(subNodesToId, subNodesToJson, ids[id], nodesToId, nodesToJson)
+        var json = Object.assign({}, json, subJson);
+        console.log(subJson);
+    }
+    return json;
+
+}
+
 //TODO get value to change inside object on update
 class MessageControl extends Rete.Control {
     constructor(emitter, msg) {
         super(msg);
-        this.emitter = emitter;
-        this.template = '<input :value="msg" @input="change($event)"/>';
-
+        console.log(emitter)
+        this.template = '<input @input="change($event)" placeholder="'+msg+'"/>';
+        this.id = msg;
         this.scope = {
-            msg,
             change: this.change.bind(this)
         };
     }
 
     change(e) {
-        this.scope.value = +e.target.value;
+        this.msg = e.target.value;
         this.update();
     }
 
     update() {
-        this.putData('msg', this.scope.value)
-        this.emitter.trigger('process');
+        this.putData('msg', this.msg)
         this._alight.scan();
     }
 
     mounted() {
-        this.scope.value = this.getData('msg') || 0;
-        this.update();
+        //this.scope.value = this.getData('msg');
+        this.msg = "";
+        //this.update();
     }
 
-    setValue(val) {
-        this.scope.value = val;
+    setValue(msg) {
+        this.msg = msg;
         this._alight.scan()
     }
 }
@@ -45,13 +147,13 @@ for (type in jsonObj) {
   for (subtype in jsonType){
     //console.log("key:"+type+jsonType[subtype]["name"])
     if(type == "source"){
-      componentMap[type+jsonType[subtype]["name"]] = getSource(type+jsonType[subtype]["name"], jsonType[subtype])
+      componentMap[type+jsonType[subtype]["name"]] = getSource(type, jsonType[subtype]["name"], jsonType[subtype])
       //console.log("source");
     }else if(type == "sink"){
-      componentMap[type+jsonType[subtype]["name"]] = getSink(type+jsonType[subtype]["name"], jsonType[subtype])
+      componentMap[type+jsonType[subtype]["name"]] = getSink(type, jsonType[subtype]["name"], jsonType[subtype])
       //console.log("sink");
     }else{
-      componentMap[type+jsonType[subtype]["name"]] = getOperator(type+jsonType[subtype]["name"], jsonType[subtype])
+      componentMap[type+jsonType[subtype]["name"]] = getOperator(type, jsonType[subtype]["name"], jsonType[subtype])
       //console.log("op");
     }
   }
@@ -67,9 +169,7 @@ function getNodeControllers(subtype, node){
             if(!(subtype[val] instanceof Object)){
                 var ctrl = new MessageControl(this.editor, val);
                 node = node.addControl(ctrl)
-                console.log("val:"+val)
             }else{
-                console.log("sub:"+val)
                 for(subval in subtype[val]){
                     if(subval != "name" && subval != "req" && subval != "allowed"){
                         var ctrl = new MessageControl(this.editor, val+"."+subval);
@@ -82,10 +182,11 @@ function getNodeControllers(subtype, node){
     return node
 }
 
-function getSource(name, subtype) {
+function getSource(type, name, subtype) {
     return class extends Rete.Component {
       constructor(){
-        super(name);
+        super(type+":"+name);
+        this._type = type;
         this._name = name;
       }
       builder(node) {
@@ -101,11 +202,12 @@ function getSource(name, subtype) {
     }
 }
 
-function getSink(name, subtype) {
+function getSink(type, name, subtype) {
 
     return class extends Rete.Component {
       constructor(){
-        super(name);
+        super(type+":"+name);
+        this._type = type;
         this._name = name;
       }
       builder(node) {
@@ -121,10 +223,11 @@ function getSink(name, subtype) {
     }
 }
 
-function getOperator(name, subtype) {
+function getOperator(type, name, subtype) {
     return class extends Rete.Component {
       constructor(){
-        super(name);
+        super(type+":"+name);
+        this._type = type;
         this._name = name;
       }
       builder(node) {
@@ -149,13 +252,11 @@ function getOperator(name, subtype) {
 
     var componentsDynamic = [];
     Object.keys(componentMap).forEach(function(key) {
-        //console.log(key)
         var tmp = new componentMap[key];
-        //console.log(tmp)
         componentsDynamic.push(tmp);
     });
 
-    var editor = new Rete.NodeEditor('demo@0.1.0', container);
+    editor = new Rete.NodeEditor('demo@0.1.0', container);
     editor.use(ConnectionPlugin.default);
     //editor.use(VueRenderPlugin.default);
     editor.use(ContextMenuPlugin.default);
