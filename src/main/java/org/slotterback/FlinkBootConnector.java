@@ -22,7 +22,8 @@ public class FlinkBootConnector {
     public FlinkBootConnector(ParameterTool parameterTool) throws IOException {
 
         jobName = parameterTool.get("streambuilder.jobname", "AutoFlinkJob");
-        String jsonFile = parameterTool.get("streambuilder.json");
+        String jsonFile = parameterTool.get("streambuilder.json.file", null);
+        String jsonRaw = parameterTool.get("streambuilder.json.raw", null);
         String schemasString = parameterTool.get("streambuilder.avro", "");
         killDirectory = null;
 
@@ -36,7 +37,12 @@ public class FlinkBootConnector {
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
-        Map streamBuilder = objectMapper.readValue(new FileReader(jsonFile), HashMap.class);
+        Map streamBuilder;
+        if(jsonRaw != null){
+            streamBuilder = objectMapper.readValue(jsonRaw, HashMap.class);
+        }else {
+            streamBuilder = objectMapper.readValue(new FileReader(jsonFile), HashMap.class);
+        }
         Map schemas = buildSchemas(schemasString, objectMapper);
 
         StreamBuilder builder = new StreamBuilder();

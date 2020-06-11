@@ -48,8 +48,7 @@ public class FilterOperator extends GenericOperator {
                 try {
                     compVal = Double.valueOf(compVal.toString());
                 } catch (Exception e) {}
-
-                System.out.println(dynamicFunction.compare(compVal, target));
+                //System.out.println(dynamicFunction.compare(compVal, target));
                 return dynamicFunction.compare(compVal, target);
             }
         });

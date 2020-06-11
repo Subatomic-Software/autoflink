@@ -1,11 +1,92 @@
-
-var jsonComponents = '{"sink":{"print":{"name":"print"},"file":{"name":"file","format":{"schema":"schema","allowed":{"type":["json","avro","csv"]},"name":"format","type":"type","req":["type"]},"directory":"directory","req":["directory","format"]},"kafka":{"name":"kafka","format":{"schema":"schema","allowed":{"type":["json","avro","csv"]},"name":"format","type":"type","req":["type"]},"topic":"topic","broker":"broker","req":["broker","topic","format"]}},"source":{"file":{"name":"file","format":{"schema":"schema","allowed":{"type":["json","avro","csv"]},"name":"format","type":"type","req":["type"]},"directory":"directory","req":["directory","format"]},"kafka":{"groupId":"groupId","name":"kafka","format":{"schema":"schema","allowed":{"type":["json","avro","csv"]},"name":"format","type":"type","req":["type"]},"topic":"topic","broker":"broker","req":["broker","topic","groupId","format"]}},"operation":{"filter":{"allowed":{"function":["==","!=","<",">"]},"function":"function","name":"filter","value":"value","target":"target","req":["target","function","value"]},"map":{"eval":"eval","allowed":{"operation":["calc","remove","replace"]},"name":"map","operation":"operation","target":"target","req":["operation","target"]}}}'
-var jsonObj = JSON.parse(jsonComponents)
-//console.log(jsonObj)
-
+console.log("Begin main.js..")
 var editor;
+var componentMap = {};
+var jsonDriver = "";
+var autoSocket = new Rete.Socket('autoflink');
+
+console.log("Loading UI driver json..")
+$.get( "http://localhost:8080/load", function( result ) {
+    console.log("UI driver json loaded");
+    jsonObj = JSON.parse(result)
+    startEditor(jsonObj);
+});
 
 function generateJson(){
+    json = generateJsonFromEditor()
+    alert("Stream driver generated:\n\n" + json);
+    jsonDriver = json;
+    $("#logger").text("json created");
+}
+
+function startStream(){
+
+    if(jsonDriver == ""){
+
+        $.ajax({
+            url: 'http://localhost:8080/startWithoutJson',
+            type: 'PUT',
+            success: function(result) {
+                console.log("started without json driver");
+                $("#logger").text(result);
+            }
+        });
+
+    }else{
+
+        $.ajax({
+            url: 'http://localhost:8080/startWithJson',
+            type: 'PUT',
+            data: jsonDriver,
+            contentType: "application/json; charset=utf-8",
+            dataType   : "json",
+            success: function(result) {
+                console.log("started with json driver");
+                $("#logger").text(result);
+            }
+        });
+
+    }
+}
+
+function stopStream(){
+    $.get( "http://localhost:8080/stop", function( result ) {
+        console.log("stopped");
+        $("#logger").text(result);
+    });
+}
+
+
+//TODO get value to change inside object on update
+class MessageControl extends Rete.Control {
+    constructor(emitter, msg) {
+        super(msg);
+        //console.log(emitter)
+        this.template = '<input @input="change($event)" placeholder="'+msg+'"/>';
+        this.id = msg;
+        this.scope = {
+            change: this.change.bind(this)
+        };
+    }
+    change(e) {
+        this.msg = e.target.value;
+        this.update();
+    }
+    update() {
+        this.putData('msg', this.msg)
+        this._alight.scan();
+    }
+    mounted() {
+        //this.scope.value = this.getData('msg');
+        this.msg = "";
+        //this.update();
+    }
+    setValue(msg) {
+        this.msg = msg;
+        this._alight.scan()
+    }
+}
+
+function generateJsonFromEditor(){
     //console.log(editor.nodes);
     var nodes = editor.nodes;
     var nodesToJson = {};
@@ -72,9 +153,8 @@ function generateJson(){
     }
 
     var finalJson = JSON.stringify(jsonMap);
-    console.log(finalJson);
+    //console.log(finalJson);
     return finalJson;
-
 }
 
 function generateSubJson(id, nodesToId, nodesToJson){
@@ -96,65 +176,10 @@ function generateSubJson(id, nodesToId, nodesToJson){
         var subJson = generateSubJson(ids[index], nodesToId, nodesToJson)
         var subkeys = Object.keys(subJson);
         json[keys[0]][subkeys[0]] = subJson[subkeys[0]];
-        console.log(subJson);
+        //console.log(subJson);
     }
     return json;
 }
-
-//TODO get value to change inside object on update
-class MessageControl extends Rete.Control {
-    constructor(emitter, msg) {
-        super(msg);
-        console.log(emitter)
-        this.template = '<input @input="change($event)" placeholder="'+msg+'"/>';
-        this.id = msg;
-        this.scope = {
-            change: this.change.bind(this)
-        };
-    }
-
-    change(e) {
-        this.msg = e.target.value;
-        this.update();
-    }
-
-    update() {
-        this.putData('msg', this.msg)
-        this._alight.scan();
-    }
-
-    mounted() {
-        //this.scope.value = this.getData('msg');
-        this.msg = "";
-        //this.update();
-    }
-
-    setValue(msg) {
-        this.msg = msg;
-        this._alight.scan()
-    }
-}
-
-var componentMap = {};
-for (type in jsonObj) {
-  //console.log(jsonObj[type])
-  var jsonType = jsonObj[type]
-  for (subtype in jsonType){
-    //console.log("key:"+type+jsonType[subtype]["name"])
-    if(type == "source"){
-      componentMap[type+jsonType[subtype]["name"]] = getSource(type, jsonType[subtype]["name"], jsonType[subtype])
-      //console.log("source");
-    }else if(type == "sink"){
-      componentMap[type+jsonType[subtype]["name"]] = getSink(type, jsonType[subtype]["name"], jsonType[subtype])
-      //console.log("sink");
-    }else{
-      componentMap[type+jsonType[subtype]["name"]] = getOperator(type, jsonType[subtype]["name"], jsonType[subtype])
-      //console.log("op");
-    }
-  }
-}
-
-var autoSocket = new Rete.Socket('autoflink');
 
 function getNodeControllers(subtype, node){
     var ctrl = new MessageControl(this.editor, 'name');
@@ -239,51 +264,72 @@ function getOperator(type, name, subtype) {
     }
 }
 
+function startEditor(jsonObj){
+    console.log("Building component map..");
+    for (type in jsonObj) {
+      //console.log(jsonObj[type])
+      var jsonType = jsonObj[type]
+      for (subtype in jsonType){
+        //console.log("key:"+type+jsonType[subtype]["name"])
+        if(type == "source"){
+          componentMap[type+jsonType[subtype]["name"]] = getSource(type, jsonType[subtype]["name"], jsonType[subtype])
+          //console.log("source");
+        }else if(type == "sink"){
+          componentMap[type+jsonType[subtype]["name"]] = getSink(type, jsonType[subtype]["name"], jsonType[subtype])
+          //console.log("sink");
+        }else{
+          componentMap[type+jsonType[subtype]["name"]] = getOperator(type, jsonType[subtype]["name"], jsonType[subtype])
+          //console.log("op");
+        }
+      }
+    }
+    console.log("Component map built");
 
+    console.log("Starting editor..");
+    (async () => {
+        var container = document.querySelector('#rete');
 
-
-(async () => {
-    var container = document.querySelector('#rete');
-
-    var componentsDynamic = [];
-    Object.keys(componentMap).forEach(function(key) {
-        var tmp = new componentMap[key];
-        componentsDynamic.push(tmp);
-    });
-
-    editor = new Rete.NodeEditor('demo@0.1.0', container);
-    editor.use(ConnectionPlugin.default);
-    //editor.use(VueRenderPlugin.default);
-    editor.use(ContextMenuPlugin.default);
-    editor.use(AreaPlugin);
-    editor.use(CommentPlugin.default);
-    editor.use(HistoryPlugin);
-    editor.use(ConnectionMasteryPlugin.default);
-    editor.use(AlightRenderPlugin);
-    editor.use(DockPlugin.default, {
-          container: document.querySelector('.dock'),
-          itemClass: 'dock-item', // default: dock-item
-          plugins: [VueRenderPlugin.default] // render plugins
+        var componentsDynamic = [];
+        Object.keys(componentMap).forEach(function(key) {
+            var tmp = new componentMap[key];
+            componentsDynamic.push(tmp);
         });
 
-    var engine = new Rete.Engine('demo@0.1.0');
+        editor = new Rete.NodeEditor('demo@0.1.0', container);
+        editor.use(ConnectionPlugin.default);
+        //editor.use(VueRenderPlugin.default);
+        editor.use(ContextMenuPlugin.default);
+        editor.use(AreaPlugin);
+        editor.use(CommentPlugin.default);
+        editor.use(HistoryPlugin);
+        editor.use(ConnectionMasteryPlugin.default);
+        editor.use(AlightRenderPlugin);
+        editor.use(DockPlugin.default, {
+              container: document.querySelector('.dock'),
+              itemClass: 'dock-item', // default: dock-item
+              plugins: [VueRenderPlugin.default] // render plugins
+            });
 
-    componentsDynamic.map(c => {
-        editor.register(c);
-        engine.register(c);
-    });
+        var engine = new Rete.Engine('demo@0.1.0');
 
-    editor.on('zoom', ({ source }) => {
-        return source !== 'dblclick';
-    });
+        componentsDynamic.map(c => {
+            editor.register(c);
+            engine.register(c);
+        });
 
-    editor.on('process nodecreated noderemoved connectioncreated connectionremoved', async () => {
-        await engine.abort();
-        await engine.process(editor.toJSON());
-    });
+        editor.on('zoom', ({ source }) => {
+            return source !== 'dblclick';
+        });
 
-    editor.view.resize();
-    AreaPlugin.zoomAt(editor);
-    editor.trigger('process');
-})();
+        editor.on('process nodecreated noderemoved connectioncreated connectionremoved', async () => {
+            console.log("silent?");
+            await engine.abort();
+            //await engine.process(editor.toJSON());
+        });
 
+        editor.view.resize();
+        AreaPlugin.zoomAt(editor);
+        editor.trigger('process');
+        console.log("Editor started");
+    })();
+}

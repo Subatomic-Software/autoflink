@@ -41,7 +41,7 @@ public class StreamBuilder {
 
         if(function.equals("source")){
             stream = GenericSource.sourceBuilder(env, schemas, stream, entry, type, config).getSourceStream();
-        }else if(function.equals("operator")){
+        }else if(function.equals("operation")){
             stream = GenericOperator.functionBuilder(env, schemas, stream, entry, type, config).getSourceStream();
         }else if(function.equals("key")){
             //todo
