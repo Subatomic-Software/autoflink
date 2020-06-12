@@ -1,8 +1,10 @@
 console.log("Begin main.js..")
 var editor;
-var componentMap = {};
 var jsonDriver = "";
 var autoSocket = new Rete.Socket('autoflink');
+var componentsMap = {};
+
+var test;
 
 console.log("Loading UI driver json..")
 $.get( "http://localhost:8080/load", function( result ) {
@@ -10,6 +12,38 @@ $.get( "http://localhost:8080/load", function( result ) {
     jsonObj = JSON.parse(result)
     startEditor(jsonObj);
 });
+
+function clearEditor(){
+    var data = editor.toJSON();
+    console.log(data);
+    var nodes = editor.nodes;
+    var i = nodes.length;
+    while(i > 0){
+        i--;
+        editor.removeNode(nodes[i]);
+    }
+
+    test = data;
+}
+
+function loadEditor(){
+    //clearEditor();
+    (async () => {
+
+/*
+        console.log(componentsMap)
+        var source = await componentsMap["sourcefile"].createNode({name: "test"});
+        editor.addNode(source);
+        var sink = await componentsMap["sinkprint"].createNode();
+        editor.addNode(sink);
+        editor.connect(source.outputs.get('out'), sink.inputs.get('in'));
+*/
+
+        editor.fromJSON(test);
+
+
+    })();
+}
 
 function generateJson(){
     json = generateJsonFromEditor()
@@ -21,7 +55,6 @@ function generateJson(){
 function startStream(){
 
     if(jsonDriver == ""){
-
         $.ajax({
             url: 'http://localhost:8080/startWithoutJson',
             type: 'PUT',
@@ -32,7 +65,6 @@ function startStream(){
         });
 
     }else{
-
         $.ajax({
             url: 'http://localhost:8080/startWithJson',
             type: 'PUT',
@@ -44,7 +76,6 @@ function startStream(){
                 $("#logger").text(result);
             }
         });
-
     }
 }
 
@@ -58,12 +89,13 @@ function stopStream(){
 
 //TODO get value to change inside object on update
 class MessageControl extends Rete.Control {
-    constructor(emitter, msg) {
-        super(msg);
+    constructor(emitter, val) {
+        super(val);
         //console.log(emitter)
-        this.template = '<input @input="change($event)" placeholder="'+msg+'"/>';
-        this.id = msg;
+        this.template = '<input :value="val" @input="change($event)" placeholder="'+val+'"/>';
+        this.id = val;
         this.scope = {
+            val: "",
             change: this.change.bind(this)
         };
     }
@@ -72,13 +104,17 @@ class MessageControl extends Rete.Control {
         this.update();
     }
     update() {
-        this.putData('msg', this.msg)
+        this.putData(this.id, this.msg)
+        this.scope.val = this.msg;
         this._alight.scan();
     }
     mounted() {
-        //this.scope.value = this.getData('msg');
-        this.msg = "";
-        //this.update();
+        if(this.getData(this.id) !== undefined){
+            this.msg = this.getData(this.id);
+        }else{
+            this.msg = "";
+        }
+        this.update();
     }
     setValue(msg) {
         this.msg = msg;
@@ -214,10 +250,13 @@ function getSource(type, name, subtype) {
         return getNodeControllers(subtype, node).addOutput(out1);
       }
       worker(node, inputs, outputs) {
-        outputs['num'] = node.data.num;
+        outputs['name'] = node.data._name;
       }
       get name() {
           return this._name;
+      }
+      set type(type) {
+          this._type = type;
       }
     }
 }
@@ -265,6 +304,7 @@ function getOperator(type, name, subtype) {
 }
 
 function startEditor(jsonObj){
+    var componentClasses = {};
     console.log("Building component map..");
     for (type in jsonObj) {
       //console.log(jsonObj[type])
@@ -272,13 +312,13 @@ function startEditor(jsonObj){
       for (subtype in jsonType){
         //console.log("key:"+type+jsonType[subtype]["name"])
         if(type == "source"){
-          componentMap[type+jsonType[subtype]["name"]] = getSource(type, jsonType[subtype]["name"], jsonType[subtype])
+          componentClasses[type+jsonType[subtype]["name"]] = getSource(type, jsonType[subtype]["name"], jsonType[subtype])
           //console.log("source");
         }else if(type == "sink"){
-          componentMap[type+jsonType[subtype]["name"]] = getSink(type, jsonType[subtype]["name"], jsonType[subtype])
+          componentClasses[type+jsonType[subtype]["name"]] = getSink(type, jsonType[subtype]["name"], jsonType[subtype])
           //console.log("sink");
         }else{
-          componentMap[type+jsonType[subtype]["name"]] = getOperator(type, jsonType[subtype]["name"], jsonType[subtype])
+          componentClasses[type+jsonType[subtype]["name"]] = getOperator(type, jsonType[subtype]["name"], jsonType[subtype])
           //console.log("op");
         }
       }
@@ -287,12 +327,12 @@ function startEditor(jsonObj){
 
     console.log("Starting editor..");
     (async () => {
+        var components = [];
         var container = document.querySelector('#rete');
-
-        var componentsDynamic = [];
-        Object.keys(componentMap).forEach(function(key) {
-            var tmp = new componentMap[key];
-            componentsDynamic.push(tmp);
+        Object.keys(componentClasses).forEach(function(key) {
+            var tmp = new componentClasses[key];
+            components.push(tmp);
+            componentsMap[key] = tmp;
         });
 
         editor = new Rete.NodeEditor('demo@0.1.0', container);
@@ -302,7 +342,7 @@ function startEditor(jsonObj){
         editor.use(AreaPlugin);
         editor.use(CommentPlugin.default);
         editor.use(HistoryPlugin);
-        editor.use(ConnectionMasteryPlugin.default);
+        //editor.use(ConnectionMasteryPlugin.default);
         editor.use(AlightRenderPlugin);
         editor.use(DockPlugin.default, {
               container: document.querySelector('.dock'),
@@ -312,7 +352,7 @@ function startEditor(jsonObj){
 
         var engine = new Rete.Engine('demo@0.1.0');
 
-        componentsDynamic.map(c => {
+        components.map(c => {
             editor.register(c);
             engine.register(c);
         });
