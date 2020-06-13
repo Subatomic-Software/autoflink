@@ -8,12 +8,8 @@ var dockCount = 0;
 var test = {};
 var rawflink = "";
 
-var maxHeight = 200;
-var maxWidth = 200;
-var padHeight = 200;
-var padWidth = 200;
-var incHeight = maxHeight + padHeight;
-var incWidth = maxWidth + padWidth;
+var heightbuff = 150;
+var widthbuff = 500;
 
 var fileInput = document.getElementById('fileInput');
 fileInput.addEventListener('change', function(e) {
@@ -62,16 +58,19 @@ function loadEditor(){
 
 
         id = dockCount+1;
-        grid = [];
         var level = 0;
-        reteNodes = {};
+        var y = 0;
+        var level = 0;
+        var reteNodes = {};
 
         var rootKeys = Object.keys(flinkObj);
         console.log(rootKeys);
         for(keyIndex in rootKeys){
             var tmp = {};
+            tmp["position"] = [level*widthbuff, y*heightbuff];
             var localId = id;
             id++;
+
             var sourceObj = flinkObj[rootKeys[keyIndex]];
             var sourceType = sourceObj["type"];
             var sourceKeys = Object.keys(sourceObj)
@@ -80,7 +79,7 @@ function loadEditor(){
             for(sourceIndex in sourceKeys){
                 var sourceKey = sourceKeys[sourceIndex];
                 if(sourceKey !== sourceType && sourceKey !== "function" && sourceKey !== "type"){
-                    outputs.push(generateReteNode(localId, sourceKey, sourceObj[sourceKey]));
+                    outputs.push(generateReteNode(localId, sourceKey, sourceObj[sourceKey], level+1));
                 }else if(sourceKey === sourceType){
                     var dataObj = sourceObj[sourceKey];
                     var dataKeys = Object.keys(dataObj);
@@ -114,14 +113,16 @@ function loadEditor(){
             }else{
                 tmp["outputs"] = {};
             }
-            tmp["position"] = [0, 0 ];
+            y = y + 1;
             reteNodes[localId] = tmp;
         }
 
-        function generateReteNode(inputId, name, obj){
+        function generateReteNode(inputId, name, obj, level){
             var tmp = {};
+            tmp["position"] = [level*widthbuff, y*heightbuff];
             var localId = id;
             id++;
+
             var sourceType = obj["type"];
             var sourceKeys = Object.keys(obj)
             var outputs = [];
@@ -129,7 +130,7 @@ function loadEditor(){
             for(sourceIndex in sourceKeys){
                 var sourceKey = sourceKeys[sourceIndex];
                 if(sourceKey !== sourceType && sourceKey !== "function" && sourceKey !== "type"){
-                    outputs.push(generateReteNode(localId, sourceKey, obj[sourceKey]));
+                    outputs.push(generateReteNode(localId, sourceKey, obj[sourceKey], level+1));
                 }else if(sourceKey === sourceType){
                     var dataObj = obj[sourceKey];
                     var dataKeys = Object.keys(dataObj);
@@ -167,8 +168,8 @@ function loadEditor(){
             }else{
                 tmp["outputs"] = {};
             }
-            tmp["position"] = [0, 0];
             reteNodes[localId] = tmp;
+            y = y + 1;
             return localId;
         }
 
