@@ -1,10 +1,31 @@
 console.log("Begin main.js..")
+
 var editor;
 var jsonDriver = "";
 var autoSocket = new Rete.Socket('autoflink');
 var componentsMap = {};
+var dockCount = 0;
+var test = {};
+var rawflink = "";
 
-var test;
+var maxHeight = 200;
+var maxWidth = 200;
+var padHeight = 200;
+var padWidth = 200;
+var incHeight = maxHeight + padHeight;
+var incWidth = maxWidth + padWidth;
+
+var fileInput = document.getElementById('fileInput');
+fileInput.addEventListener('change', function(e) {
+    var file = fileInput.files[0];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        rawflink = reader.result;
+        console.log(rawflink);
+    }
+    reader.readAsText(file);
+});
+
 
 console.log("Loading UI driver json..")
 $.get( "http://localhost:8080/load", function( result ) {
@@ -14,8 +35,8 @@ $.get( "http://localhost:8080/load", function( result ) {
 });
 
 function clearEditor(){
+    console.log("Clearing editor...");
     var data = editor.toJSON();
-    console.log(data);
     var nodes = editor.nodes;
     var i = nodes.length;
     while(i > 0){
@@ -24,24 +45,153 @@ function clearEditor(){
     }
 
     test = data;
+    console.log(test);
 }
 
 function loadEditor(){
+    console.log("Loading editor...");
     //clearEditor();
     (async () => {
 
+        if(!rawflink){
+            console.log("Nothing loaded...");
+            return;
+        }
+        console.log(JSON.parse(rawflink));
+        flinkObj = JSON.parse(rawflink);
+
+
+        id = dockCount+1;
+        grid = [];
+        var level = 0;
+        reteNodes = {};
+
+        var rootKeys = Object.keys(flinkObj);
+        console.log(rootKeys);
+        for(keyIndex in rootKeys){
+            var tmp = {};
+            var localId = id;
+            id++;
+            var sourceObj = flinkObj[rootKeys[keyIndex]];
+            var sourceType = sourceObj["type"];
+            var sourceKeys = Object.keys(sourceObj)
+            var outputs = [];
+            var data = {};
+            for(sourceIndex in sourceKeys){
+                var sourceKey = sourceKeys[sourceIndex];
+                if(sourceKey !== sourceType && sourceKey !== "function" && sourceKey !== "type"){
+                    outputs.push(generateReteNode(localId, sourceKey, sourceObj[sourceKey]));
+                }else if(sourceKey === sourceType){
+                    var dataObj = sourceObj[sourceKey];
+                    var dataKeys = Object.keys(dataObj);
+                    for(dataIndex in dataKeys){
+                        var dataKey = dataKeys[dataIndex];
+                        if(dataObj[dataKey].constructor == Object){
+                            var subdataObj = sourceObj[sourceKey];
+                            var subdataKeys = Object.keys(dataObj[dataKey]);
+                            for(subdataIndex in subdataKeys){
+                                var subdataKey = subdataKeys[subdataIndex];
+                                data[dataKey+"."+subdataKey] = subdataObj[dataKey][subdataKey];
+                            }
+                        }else{
+                            data[dataKey] = dataObj[dataKey];
+                        }
+                    }
+                }
+            }
+            data["name"] = rootKeys[keyIndex];
+            tmp["name"] = sourceObj["function"]+":"+sourceObj["type"];
+            tmp["id"] = localId;
+            tmp["data"] = data;
+            tmp["inputs"] = {};
+            if(outputs.length > 0){
+                var outputStr = "";
+                for(i in outputs){
+                    outputStr = outputStr + '{"node":' + outputs[i] + ',"input":"in","data":{}},';
+                }
+                outputStr = outputStr.slice(0, -1);
+                tmp["outputs"] = JSON.parse('{"out":{"connections":[' + outputStr + ']}}');
+            }else{
+                tmp["outputs"] = {};
+            }
+            tmp["position"] = [0, 0 ];
+            reteNodes[localId] = tmp;
+        }
+
+        function generateReteNode(inputId, name, obj){
+            var tmp = {};
+            var localId = id;
+            id++;
+            var sourceType = obj["type"];
+            var sourceKeys = Object.keys(obj)
+            var outputs = [];
+            var data = {};
+            for(sourceIndex in sourceKeys){
+                var sourceKey = sourceKeys[sourceIndex];
+                if(sourceKey !== sourceType && sourceKey !== "function" && sourceKey !== "type"){
+                    outputs.push(generateReteNode(localId, sourceKey, obj[sourceKey]));
+                }else if(sourceKey === sourceType){
+                    var dataObj = obj[sourceKey];
+                    var dataKeys = Object.keys(dataObj);
+                    for(dataIndex in dataKeys){
+                        var dataKey = dataKeys[dataIndex];
+                        if(dataObj[dataKey].constructor == Object){
+                            var subdataObj = obj[sourceKey];
+                            var subdataKeys = Object.keys(dataObj[dataKey]);
+                            for(subdataIndex in subdataKeys){
+                                var subdataKey = subdataKeys[subdataIndex];
+                                data[dataKey+"."+subdataKey] = subdataObj[dataKey][subdataKey];
+                            }
+                        }else{
+                            data[dataKey] = dataObj[dataKey];
+                        }
+                    }
+                }
+            }
+            data["name"] = name;
+            tmp["name"] = obj["function"]+":"+obj["type"];
+            tmp["id"] = localId;
+            tmp["data"] = data;
+            if(obj["function"] !== "source"){
+                tmp["inputs"] = JSON.parse('{"in":{"connections":[{"node":'+inputId+',"output":"out","data":{}}]}}');
+            }else{
+                tmp["inputs"] = {};
+            }
+            if(outputs.length > 0){
+                var outputStr = "";
+                for(i in outputs){
+                    outputStr = outputStr + '{"node":' + outputs[i] + ',"input":"in","data":{}},';
+                }
+                outputStr = outputStr.slice(0, -1);
+                tmp["outputs"] = JSON.parse('{"out":{"connections":[' + outputStr + ']}}');
+            }else{
+                tmp["outputs"] = {};
+            }
+            tmp["position"] = [0, 0];
+            reteNodes[localId] = tmp;
+            return localId;
+        }
+
 /*
-        console.log(componentsMap)
-        var source = await componentsMap["sourcefile"].createNode({name: "test"});
-        editor.addNode(source);
-        var sink = await componentsMap["sinkprint"].createNode();
-        editor.addNode(sink);
-        editor.connect(source.outputs.get('out'), sink.inputs.get('in'));
+'{"id":"demo@0.1.0",
+"nodes":{
+"8":{
+    "id":8,
+    "data":{"name":"name1","format.schema":"schema1","format.type":"tupl1","directory":"direct1"},
+    "inputs":{},
+    "outputs":{"out":{"connections":[{"node":9,"input":"in","data":{}}]}},
+    "position":[-347,-97],
+    "name":"source:file"
+    },
+"9":{"id":9,"data":{"name":"naem2","format.schema":"shcmea2","format.type":"typoku2","directory":"cijrect2"},"inputs":{"in":{"connections":[{"node":8,"output":"out","data":{}}]}},"outputs":{},"position":[-28,-121],"name":"sink:file"}},"comments":[]}';
 */
 
-        editor.fromJSON(test);
-
-
+        var reteObj = {};
+        reteObj["nodes"] = reteNodes;
+        reteObj["id"] = "demo@0.1.0";
+        reteObj["comments"] = [];
+        console.log(JSON.stringify(reteObj));
+        editor.fromJSON(reteObj);
     })();
 }
 
@@ -53,7 +203,6 @@ function generateJson(){
 }
 
 function startStream(){
-
     if(jsonDriver == ""){
         $.ajax({
             url: 'http://localhost:8080/startWithoutJson',
@@ -63,7 +212,6 @@ function startStream(){
                 $("#logger").text(result);
             }
         });
-
     }else{
         $.ajax({
             url: 'http://localhost:8080/startWithJson',
@@ -333,6 +481,7 @@ function startEditor(jsonObj){
             var tmp = new componentClasses[key];
             components.push(tmp);
             componentsMap[key] = tmp;
+            dockCount++;
         });
 
         editor = new Rete.NodeEditor('demo@0.1.0', container);
@@ -362,7 +511,6 @@ function startEditor(jsonObj){
         });
 
         editor.on('process nodecreated noderemoved connectioncreated connectionremoved', async () => {
-            console.log("silent?");
             await engine.abort();
             //await engine.process(editor.toJSON());
         });

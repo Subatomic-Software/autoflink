@@ -28,10 +28,16 @@
 </head>
 <body>
 <button type="button" onclick="generateJson();">Generate Json</button>
-<button type="button" onclick="startStream();">Start Stream</button>
-<button type="button" onclick="stopStream();">Stop Stream</button>
 <button type="button" onclick="clearEditor();">Clear Editor</button>
+<button type="button" onclick="undoClear();">Undo Clear</button>
 <button type="button" onclick="loadEditor();">Load Editor</button>
+<div>
+    <button type="button" onclick="startStream();">Start Stream</button>
+    <button type="button" onclick="stopStream();">Stop Stream</button>
+</div>
+<div>
+    <input type="file" id="fileInput">
+</div>
 <label id="logger"></label>
 <div class="editor">
     <div class="container">
