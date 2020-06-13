@@ -5,8 +5,7 @@ var jsonDriver = "";
 var autoSocket = new Rete.Socket('autoflink');
 var componentsMap = {};
 var dockCount = 0;
-var test = {};
-var rawflink = "";
+var undo = {};
 
 var heightbuff = 150;
 var widthbuff = 500;
@@ -16,13 +15,13 @@ fileInput.addEventListener('change', function(e) {
     var file = fileInput.files[0];
     var reader = new FileReader();
     reader.onload = function(e) {
-        rawflink = reader.result;
-        console.log(rawflink);
+        jsonDriver = reader.result;
+        console.log(jsonDriver);
     }
     reader.readAsText(file);
 });
 
-
+//LOAD NODE DRIVER JSON FROM SERVER
 console.log("Loading UI driver json..")
 $.get( "http://localhost:8080/load", function( result ) {
     console.log("UI driver json loaded");
@@ -30,6 +29,7 @@ $.get( "http://localhost:8080/load", function( result ) {
     startEditor(jsonObj);
 });
 
+//CLEAR EDITOR BUTTON
 function clearEditor(){
     console.log("Clearing editor...");
     var data = editor.toJSON();
@@ -39,23 +39,26 @@ function clearEditor(){
         i--;
         editor.removeNode(nodes[i]);
     }
-
-    test = data;
-    console.log(test);
+    undo = data;
 }
 
+function undoClear(){
+    console.log("Loading from last clear...");
+    editor.fromJSON(undo);
+}
+
+//LOAD EDITOR BUTTON
 function loadEditor(){
     console.log("Loading editor...");
     //clearEditor();
     (async () => {
 
-        if(!rawflink){
+        if(!jsonDriver){
             console.log("Nothing loaded...");
             return;
         }
-        console.log(JSON.parse(rawflink));
-        flinkObj = JSON.parse(rawflink);
-
+        console.log(JSON.parse(jsonDriver));
+        flinkObj = JSON.parse(jsonDriver);
 
         id = dockCount+1;
         var level = 0;
@@ -173,20 +176,6 @@ function loadEditor(){
             return localId;
         }
 
-/*
-'{"id":"demo@0.1.0",
-"nodes":{
-"8":{
-    "id":8,
-    "data":{"name":"name1","format.schema":"schema1","format.type":"tupl1","directory":"direct1"},
-    "inputs":{},
-    "outputs":{"out":{"connections":[{"node":9,"input":"in","data":{}}]}},
-    "position":[-347,-97],
-    "name":"source:file"
-    },
-"9":{"id":9,"data":{"name":"naem2","format.schema":"shcmea2","format.type":"typoku2","directory":"cijrect2"},"inputs":{"in":{"connections":[{"node":8,"output":"out","data":{}}]}},"outputs":{},"position":[-28,-121],"name":"sink:file"}},"comments":[]}';
-*/
-
         var reteObj = {};
         reteObj["nodes"] = reteNodes;
         reteObj["id"] = "demo@0.1.0";
@@ -196,13 +185,111 @@ function loadEditor(){
     })();
 }
 
+//GENERATE JSON FROM EDITOR
 function generateJson(){
     json = generateJsonFromEditor()
     alert("Stream driver generated:\n\n" + json);
     jsonDriver = json;
     $("#logger").text("json created");
+
+    function generateJsonFromEditor(){
+        //console.log(editor.nodes);
+        var nodes = editor.nodes;
+        var nodesToJson = {};
+        var nodesToId = {}
+        var name = "";
+        for(node in nodes){
+            nodesToId[nodes[node].id] = nodes[node];
+            var nodeObj = nodes[node];
+            //console.log(nodeObj);
+            //console.log(nodeObj._alight.children)
+            var children = nodeObj._alight.children;
+            var nodeMap = {};
+            var embeddedJson = {};
+            for(child in children){
+                var control = children[child].locals.control;
+                //console.log("control");
+                //console.log(control);
+                if(control != null){
+                    //console.log(control.key+":"+control.msg);
+                    if(control.key === "name"){
+                        name = control.msg;
+                    }else if(control.msg === "" || control.key === "name"){
+                        //sockets, not inputs
+                    }else if(control.key.includes(".")){
+                        var split = control.key.split(".");
+                        var key = split[1];
+                        embeddedJson[split[0]] = Object.assign({}, embeddedJson[split[0]], {[key]: control.msg});
+                    }else{
+                        nodeMap[control.key] = control.msg
+                    }
+                }
+            }
+
+            //console.log("name:"+name)
+            //console.log(nodeObj);
+            var split = nodeObj.name.split(":");
+            for(embed in embeddedJson){
+                nodeMap[embed] = embeddedJson[embed];
+            }
+            for(node in nodeMap){
+                //console.log(node + " " + nodeMap[node]);
+                nodeMap[split[1]] = Object.assign({}, nodeMap[split[1]], {[node]: nodeMap[node]});
+                delete nodeMap[node];
+            }
+            nodeMap["function"] = split[0];
+            nodeMap["type"] = split[1];
+            nodeMap = {[name]: nodeMap}
+            nodesToJson[nodeObj.id] = nodeMap
+            //console.log(JSON.stringify(nodeMap));
+        }
+        //console.log(JSON.stringify(nodesToJson));
+
+        var jsonMap = {};
+        for(nodeId in nodesToJson){
+            var node = nodesToJson[nodeId];
+            var keys = Object.keys(node);
+            //console.log(node[keys[0]]["function"]);
+            if(node[keys[0]]["function"] === "source"){
+                //console.log(node[keys[0]]["function"]);
+                var json = generateSubJson(nodeId, nodesToId, nodesToJson);
+                var keys = Object.keys(json);
+                jsonMap[keys[0]] = json[keys[0]];
+            }
+        }
+
+        var finalJson = JSON.stringify(jsonMap);
+        //console.log(finalJson);
+        return finalJson;
+    }
+
+    function generateSubJson(id, nodesToId, nodesToJson){
+        var idString = JSON.stringify(nodesToId[id]);
+        if(idString === undefined){
+            idString = "";
+        }
+        var idStrings = idString.match(/"node":[0-9]{1,2},"input"/g);
+        var ids = [];
+        for(index in idStrings){
+            ids.push(idStrings[index].replace(/[^0-9]+/g,''));
+        }
+        if(ids.length == 0){
+            return nodesToJson[id];
+        }
+        var json = nodesToJson[id];
+        var keys = Object.keys(json);
+        for(index in ids){
+            var subJson = generateSubJson(ids[index], nodesToId, nodesToJson)
+            var subkeys = Object.keys(subJson);
+            json[keys[0]][subkeys[0]] = subJson[subkeys[0]];
+            //console.log(subJson);
+        }
+        return json;
+    }
 }
 
+
+//STARTS STREAM ON SERVER
 function startStream(){
     if(jsonDriver == ""){
         $.ajax({
@@ -228,6 +315,7 @@ function startStream(){
     }
 }
 
+//STOPS STREAM ON SERVER
 function stopStream(){
     $.get( "http://localhost:8080/stop", function( result ) {
         console.log("stopped");
@@ -235,8 +323,9 @@ function stopStream(){
     });
 }
 
-
-//TODO get value to change inside object on update
+//
+//RETE STUFF
+//
 class MessageControl extends Rete.Control {
     constructor(emitter, val) {
         super(val);
@@ -271,101 +360,9 @@ class MessageControl extends Rete.Control {
     }
 }
 
-function generateJsonFromEditor(){
-    //console.log(editor.nodes);
-    var nodes = editor.nodes;
-    var nodesToJson = {};
-    var nodesToId = {}
-    var name = "";
-    for(node in nodes){
-        nodesToId[nodes[node].id] = nodes[node];
-        var nodeObj = nodes[node];
-        //console.log(nodeObj);
-        //console.log(nodeObj._alight.children)
-        var children = nodeObj._alight.children;
-        var nodeMap = {};
-        var embeddedJson = {};
-        for(child in children){
-            var control = children[child].locals.control;
-            //console.log("control");
-            //console.log(control);
-            if(control != null){
-                //console.log(control.key+":"+control.msg);
-                if(control.key === "name"){
-                    name = control.msg;
-                }else if(control.msg === "" || control.key === "name"){
-                    //sockets, not inputs
-                }else if(control.key.includes(".")){
-                    var split = control.key.split(".");
-                    var key = split[1];
-                    embeddedJson[split[0]] = Object.assign({}, embeddedJson[split[0]], {[key]: control.msg});
-                }else{
-                    nodeMap[control.key] = control.msg
-                }
-            }
-        }
-
-        //console.log("name:"+name)
-        //console.log(nodeObj);
-        var split = nodeObj.name.split(":");
-        for(embed in embeddedJson){
-            nodeMap[embed] = embeddedJson[embed];
-        }
-        for(node in nodeMap){
-            //console.log(node + " " + nodeMap[node]);
-            nodeMap[split[1]] = Object.assign({}, nodeMap[split[1]], {[node]: nodeMap[node]});
-            delete nodeMap[node];
-        }
-        nodeMap["function"] = split[0];
-        nodeMap["type"] = split[1];
-        nodeMap = {[name]: nodeMap}
-        nodesToJson[nodeObj.id] = nodeMap
-        //console.log(JSON.stringify(nodeMap));
-    }
-    //console.log(JSON.stringify(nodesToJson));
-
-    var jsonMap = {};
-    for(nodeId in nodesToJson){
-        var node = nodesToJson[nodeId];
-        var keys = Object.keys(node);
-        //console.log(node[keys[0]]["function"]);
-        if(node[keys[0]]["function"] === "source"){
-            //console.log(node[keys[0]]["function"]);
-            var json = generateSubJson(nodeId, nodesToId, nodesToJson);
-            var keys = Object.keys(json);
-            jsonMap[keys[0]] = json[keys[0]];
-        }
-    }
-
-    var finalJson = JSON.stringify(jsonMap);
-    //console.log(finalJson);
-    return finalJson;
-}
-
-function generateSubJson(id, nodesToId, nodesToJson){
-    var idString = JSON.stringify(nodesToId[id]);
-    if(idString === undefined){
-        idString = "";
-    }
-    var idStrings = idString.match(/"node":[0-9]{1,2},"input"/g);
-    var ids = [];
-    for(index in idStrings){
-        ids.push(idStrings[index].replace(/[^0-9]+/g,''));
-    }
-    if(ids.length == 0){
-        return nodesToJson[id];
-    }
-    var json = nodesToJson[id];
-    var keys = Object.keys(json);
-    for(index in ids){
-        var subJson = generateSubJson(ids[index], nodesToId, nodesToJson)
-        var subkeys = Object.keys(subJson);
-        json[keys[0]][subkeys[0]] = subJson[subkeys[0]];
-        //console.log(subJson);
-    }
-    return json;
-}
-
+///
+//MORE RETE STUFF
+///
 function getNodeControllers(subtype, node){
     var ctrl = new MessageControl(this.editor, 'name');
     node = node.addControl(ctrl);
@@ -452,6 +449,7 @@ function getOperator(type, name, subtype) {
     }
 }
 
+//BOOTS THE EDITOR AFTER BUILDING RETE COMPONENTS
 function startEditor(jsonObj){
     var componentClasses = {};
     console.log("Building component map..");
