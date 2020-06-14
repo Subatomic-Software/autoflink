@@ -1,5 +1,24 @@
 # autoflink
 
+## TODO:  
+### UI:  
+add join  
+add schemas loading  
+add drop downs for types  
+required vs non required  
+auto generate names for operators  
+
+
+### Server:  
+add join  
+arrays in data  
+keyby+aggregation  
+regex filter  
+filter compare var to var  
+flatmap  
+
+
+## json parts
 #### Sources:  
 
 KafkaSource:  
@@ -62,22 +81,3 @@ Print:
 "function": "sink",
 "type": "print",
 "print": {}
-
-## TODO:  
-
-p0  
-file sink  
-params  
-regex filter  
-cleanup if blocks/imports  
-filter compare var to var  
-
-p1  
-keyby+aggregation  
-join  
-flatmap  
-multiple functions per function ie map ops  
-arrays in data  
-
-p3  
-json validator  

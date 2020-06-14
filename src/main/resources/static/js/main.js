@@ -47,6 +47,12 @@ function undoClear(){
     editor.fromJSON(undo);
 }
 
+function redrawEditor(){
+    console.log("Redrawing editor...");
+    jsonDriver = generateJson(false);
+    loadEditor();
+}
+
 //LOAD EDITOR BUTTON
 function loadEditor(){
     console.log("Loading editor...");
@@ -186,17 +192,22 @@ function loadEditor(){
 }
 
 //GENERATE JSON FROM EDITOR
-function generateJson(){
+function generateJson(toFile){
+    console.log(toFile);
     json = generateJsonFromEditor()
-    alert("Stream driver generated:\n\n" + json);
     jsonDriver = json;
+    if(toFile){
+        //TODO write to file
+        alert("Stream driver generated:\n\n" + json);
+    }
     $("#logger").text("json created");
+    return json;
 
     function generateJsonFromEditor(){
         //console.log(editor.nodes);
         var nodes = editor.nodes;
         var nodesToJson = {};
-        var nodesToId = {}
+        var nodesToId = {};
         var name = "";
         for(node in nodes){
             nodesToId[nodes[node].id] = nodes[node];
