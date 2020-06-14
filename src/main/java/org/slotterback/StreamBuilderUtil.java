@@ -19,12 +19,29 @@ public class StreamBuilderUtil {
     public static class Base {
         public static String function = "function";
         public static String type = "type";
+        public static String outputs = "outputs";
 
-        public static String getFunction(Map map){
+        public static String removeFunction(Map map){
             return map.remove(function).toString();
         }
-        public static String getType(Map map){
+        public static String removeType(Map map){
             return map.remove(type).toString();
+        }
+
+        public static List removeOutputs(Map map){
+            return (List) map.remove(outputs);
+        }
+
+        public static String getFunction(Map map){
+            return map.get(function).toString();
+        }
+        public static String getType(Map map){
+            return map.get(type).toString();
+        }
+
+        public static List getOutputs(Map map){
+            List outputList = (List) map.get(outputs);
+            return (outputList == null) ? new ArrayList() : outputList;
         }
 
         public static class Source{
