@@ -12,7 +12,7 @@
     "outputs":["filter2"]
   },
   "filter2": {
-    "function": "operator",
+    "function": "operation",
     "type": "filter",
     "filter": {
       "function": "<",
@@ -37,7 +37,7 @@
     "type": "print"
   },
   "map3": {
-    "function": "operator",
+    "function": "operation",
     "type": "map",
     "map": {
       "operation": "remove",
@@ -69,7 +69,7 @@
     "outputs":["map1","print2"]
   },
   "map1": {
-    "function": "operator",
+    "function": "operation",
     "type": "map",
     "map": {
       "operation": "calc",
