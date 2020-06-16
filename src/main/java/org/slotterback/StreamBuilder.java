@@ -24,7 +24,7 @@ public class StreamBuilder {
     private Map streams;
 
     private Map<String, List> outputRefs;
-    private Map<String, List<SingleOutputStreamOperator>> outputRefStreams;
+    private Map<String, SingleOutputStreamOperator> outputRefStreams;
 
     public void buildStream(Map streamBuilder, StreamExecutionEnvironment env, Map schemas, String killDirectory){
 
@@ -80,18 +80,15 @@ public class StreamBuilder {
         Map config = (Map) nextNode.remove(type);
 
         if(outputRefs.get(name).size() > 1) {
-            if(outputRefStreams.get(name) != null){
-                stream = GenericJoin.functionBuilder(env, schemas, stream, outputRefStreams.get(name).get(0), name, type, config).getSourceStream();
+            if(outputRefStreams.containsKey(name)){
+                stream = GenericJoin.functionBuilder(env, schemas, stream, outputRefStreams.get(name), name, type, config).getSourceStream();
             }else{
-                List list = new ArrayList();
-                list.add(stream);
-                //need list?
-                outputRefStreams.put(name, list);
+                outputRefStreams.put(name, stream);
                 return;
             }
         }else if(function.equals("source")){
             //shouldnt happen now
-            stream = GenericSource.sourceBuilder(env, schemas, stream, name, type, config).getSourceStream();
+            //stream = GenericSource.sourceBuilder(env, schemas, stream, name, type, config).getSourceStream();
         }else if(function.equals("operation")){
             stream = GenericOperator.functionBuilder(env, schemas, stream, name, type, config).getSourceStream();
         }else if(function.equals("sink")){

@@ -73,10 +73,31 @@ function loadEditor(){
             newIndex++;
         }
 
+        var streamJsonOrdered = {};
+        for(var nodeName in streamJson){
+            var outputs = streamJson[nodeName].outputs;
+            console.log();
+            //nodeId = nameToId[nodeName];
+            if(streamJson[nodeName].function === "source"){
+                streamJsonOrdered[nodeName] = streamJson[nodeName];
+                buildOrderedMap(outputs);
+            }
+        }
+        function buildOrderedMap(outputs){
+            for(var outputIndex in outputs){
+                var nodeName = outputs[outputIndex];
+                streamJsonOrdered[nodeName] = streamJson[nodeName];
+                var nextOutputs = streamJson[nodeName].outputs;
+                if(nextOutputs !== undefined){
+                    buildOrderedMap(nextOutputs);
+                }
+            }
+        }
+
         var idToOutputs = {};
         var idToInputs = {};
-        for(var nodeName in streamJson){
-            var streamNode = streamJson[nodeName];
+        for(var nodeName in streamJsonOrdered){
+            var streamNode = streamJsonOrdered[nodeName];
             var outputs = streamNode.outputs;
             var id = nameToId[nodeName];
 
@@ -92,8 +113,8 @@ function loadEditor(){
         }
 
         var reteNodes = {};
-        for(var nodeName in streamJson){
-            var streamNode = streamJson[nodeName];
+        for(var nodeName in streamJsonOrdered){
+            var streamNode = streamJsonOrdered[nodeName];
             var nodeId = nameToId[nodeName];
             var reteNode = {};
 
@@ -160,7 +181,8 @@ function loadEditor(){
         //position
         var level = 0;
         var y = 0;
-        for(var nodeName in streamJson){
+        var nodePosition = {};
+        for(var nodeName in streamJsonOrdered){
             nodeId = nameToId[nodeName];
             if(idToInputs[nodeId] === undefined){
                 reteNodes[nodeId]["position"] = [level*widthbuff, y*heightbuff];
@@ -170,7 +192,18 @@ function loadEditor(){
         function setPosition(nodeIds, level){
             for(var nodeIdIndex in nodeIds){
                 var nodeId = nodeIds[nodeIdIndex];
-                reteNodes[nodeId]["position"] = [level*widthbuff, y*heightbuff];
+                if(nodePosition[nodeId] === undefined){
+                    reteNodes[nodeId]["position"] = [level*widthbuff, y*heightbuff];
+                    nodePosition[nodeId] = reteNodes[nodeId]["position"];
+                }else{
+                    if(reteNodes[nodeId]["position"][0] < level){
+                        reteNodes[nodeId]["position"] = [level*widthbuff, y*heightbuff];
+                        nodePosition[nodeId] = reteNodes[nodeId]["position"];
+                    }else if(reteNodes[nodeId]["position"][1] < y*heightbuff){
+                        reteNodes[nodeId]["position"][1] = y*heightbuff;
+                    }
+                }
+
                 if(idToOutputs[nodeId].length > 0){
                     setPosition(idToOutputs[nodeId], level+1);
                 }else{
