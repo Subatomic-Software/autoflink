@@ -204,6 +204,14 @@ public class StreamBuilderUtil {
             }
         }
 
+        public static class Join{
+            public static String name = "join";
+
+            public static class UnionJoin{
+                public static String name = "union";
+            }
+        }
+
         public static class Sink{
             public static String name = "sink";
 

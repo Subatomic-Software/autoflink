@@ -6,6 +6,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.FileProcessingMode;
+import org.slotterback.join.GenericJoin;
 import org.slotterback.operator.GenericOperator;
 import org.slotterback.sink.GenericSink;
 import org.slotterback.source.GenericSource;
@@ -22,6 +23,9 @@ public class StreamBuilder {
     private Map nodes;
     private Map streams;
 
+    private Map<String, List> outputRefs;
+    private Map<String, List<SingleOutputStreamOperator>> outputRefStreams;
+
     public void buildStream(Map streamBuilder, StreamExecutionEnvironment env, Map schemas, String killDirectory){
 
         this.env = env;
@@ -29,7 +33,8 @@ public class StreamBuilder {
 
         this.nodes = new HashMap();
         this.streams = new HashMap();
-
+        this.outputRefs = new HashMap();
+        this.outputRefStreams = new HashMap();
 
         Set<String> keys = streamBuilder.keySet();
         for(String entry : keys) {
@@ -39,6 +44,15 @@ public class StreamBuilder {
             String function = StreamBuilderUtil.Base.getFunction(node);
             String type = StreamBuilderUtil.Base.getType(node);
             Map config = (Map) node.get(type);
+            List<String> outputs = StreamBuilderUtil.Base.getOutputs(node);
+            for(String output : outputs){
+                List list = (List) outputRefs.get(output);
+                if(list != null){
+                    list.add(entry);
+                }else{
+                    outputRefs.put(output, new ArrayList(){{ add(entry); }});
+                }
+            }
 
             if(function.equals("source")){
                 streams.put(entry, GenericSource.sourceBuilder(env, schemas, null, entry, type, config).getSourceStream());
@@ -50,9 +64,8 @@ public class StreamBuilder {
             Map node = (Map) nodes.get(nodeKey);
             List outputs = StreamBuilderUtil.Base.getOutputs(node);
             for(Object output : outputs){
-                buildStream2(nodeKey, (SingleOutputStreamOperator) streams.get(nodeKey), (Map) nodes.get(output));
+                buildStream(output.toString(), (SingleOutputStreamOperator) streams.get(nodeKey), (Map) nodes.get(output));
             }
-            int i = 0;
         }
 
         if(killDirectory != null) {
@@ -61,31 +74,34 @@ public class StreamBuilder {
 
     }
 
-    private void buildStream2(String name, SingleOutputStreamOperator stream, Map nextNode){
+    private void buildStream(String name, SingleOutputStreamOperator stream, Map nextNode){
         String function = StreamBuilderUtil.Base.getFunction(nextNode);
         String type = StreamBuilderUtil.Base.getType(nextNode);
         Map config = (Map) nextNode.remove(type);
 
-        if(function.equals("source")){
+        if(outputRefs.get(name).size() > 1) {
+            if(outputRefStreams.get(name) != null){
+                stream = GenericJoin.functionBuilder(env, schemas, stream, outputRefStreams.get(name).get(0), name, type, config).getSourceStream();
+            }else{
+                List list = new ArrayList();
+                list.add(stream);
+                //need list?
+                outputRefStreams.put(name, list);
+                return;
+            }
+        }else if(function.equals("source")){
             //shouldnt happen now
             stream = GenericSource.sourceBuilder(env, schemas, stream, name, type, config).getSourceStream();
         }else if(function.equals("operation")){
             stream = GenericOperator.functionBuilder(env, schemas, stream, name, type, config).getSourceStream();
-        }else if(function.equals("join")){
-            //todo:
-            //wait until everything completes,
-            //then take the 2 streams to join,
-            //join into single stream,
-            //redo build on substream
         }else if(function.equals("sink")){
             GenericSink.sinkBuilder(env, schemas, stream, name, type, config);
         }else{ }
 
         List outputs = StreamBuilderUtil.Base.getOutputs(nextNode);
         for(Object output : outputs){
-            buildStream2(output.toString(), stream, (Map) nodes.get(output));
+            buildStream(output.toString(), stream, (Map) nodes.get(output));
         }
-        int i = 0;
     }
 
     private static void attachStreamStopper(StreamExecutionEnvironment env, String listenDirectory){

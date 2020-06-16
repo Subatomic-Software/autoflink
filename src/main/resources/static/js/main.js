@@ -7,7 +7,7 @@ var componentsMap = {};
 var dockCount = 0;
 var lastCleared = {};
 
-var heightbuff = 150;
+var heightbuff = 300;
 var widthbuff = 500;
 
 var fileInput = document.getElementById('fileInput');
@@ -84,7 +84,7 @@ function loadEditor(){
             for(var i in outputs){
                 outputId = nameToId[outputs[i]];
                 idToOutputs[id].push(outputId);
-                if(typeof idToInputs[outputId] !== undefined){
+                if(idToInputs[outputId] === undefined){
                     idToInputs[outputId] = [];
                 }
                 idToInputs[outputId].push(id);
@@ -103,8 +103,11 @@ function loadEditor(){
             //outputs
             if(idToOutputs[nodeId].length > 0){
                 var outputStr = "";
-                for(i in idToOutputs[nodeId]){
-                    outputStr = outputStr + '{"node":' + idToOutputs[nodeId][i] + ',"input":"in","data":{}},';
+                for(var i in idToOutputs[nodeId]){
+                    var outputInputs = idToInputs[idToOutputs[nodeId][i]];
+                    var inId = "in" + outputInputs.findIndex((id) => id === nodeId);
+
+                    outputStr = outputStr + '{"node":' + idToOutputs[nodeId][i] + ',"input":"'+inId+'","data":{}},';
                 }
                 outputStr = outputStr.slice(0, -1);
                 reteNode["outputs"] = JSON.parse('{"out":{"connections":[' + outputStr + ']}}');
@@ -112,12 +115,21 @@ function loadEditor(){
                 reteNode["outputs"] = {};
             }
 
-            //single input
+            //inputs
             if(idToInputs[nodeId] !== undefined && idToInputs[nodeId].length > 0){
-                var inputId = idToInputs[nodeId][0];
-                reteNode["inputs"] = JSON.parse('{"in":{"connections":[{"node":'+inputId+',"output":"out","data":{}}]}}');
-            }else{
-                reteNode["inputs"] = {};
+                if(idToInputs[nodeId] !== undefined && idToInputs[nodeId].length > 0){
+                    var inputStr = '{';
+                    for(index in idToInputs[nodeId]){
+                        var inputId = idToInputs[nodeId][index]
+                        var inId = "in"+index;
+                        var inputStr = inputStr+'"'+inId+'":{"connections":[{"node":'+inputId+',"output":"out","data":{}}]},';
+                    }
+                    inputStr = inputStr.slice(0, -1);
+                    reteNode["inputs"] = JSON.parse(inputStr+'}');
+                }else{
+                    reteNode["inputs"] = {};
+                }
+                console.log();
             }
 
             //data
@@ -195,6 +207,8 @@ function editorToStreamJson(toFile){
     function generateStreamJsonFromEditor(){
         var streamNodes = {};
         var nodes = editor.nodes;
+        console.log(nodes);
+        console.log(JSON.stringify(nodes));
         var name = "";
         var idToName = {};
 
@@ -379,7 +393,7 @@ function getSink(type, name, subtype) {
         this._name = name;
       }
       builder(node) {
-        var in1 = new Rete.Input('in', "", autoSocket);
+        var in1 = new Rete.Input('in0', "", autoSocket);
         return getNodeControllers(subtype, node).addInput(in1);
       }
       worker(node, inputs, outputs) {
@@ -399,9 +413,31 @@ function getOperator(type, name, subtype) {
         this._name = name;
       }
       builder(node) {
-        var in1 = new Rete.Input('in', "", autoSocket);
+        var in1 = new Rete.Input('in0', "", autoSocket);
         var out1 = new Rete.Output('out', "", autoSocket);
         return getNodeControllers(subtype, node).addInput(in1).addOutput(out1);
+      }
+      worker(node, inputs, outputs) {
+        outputs['num'] = node.data.num;
+      }
+      get name() {
+          return this._name;
+      }
+    }
+}
+
+function getJoin(type, name, subtype) {
+    return class extends Rete.Component {
+      constructor(){
+        super(type+":"+name);
+        this._type = type;
+        this._name = name;
+      }
+      builder(node) {
+        var in1 = new Rete.Input('in0', "", autoSocket);
+        var in2 = new Rete.Input('in1', "", autoSocket);
+        var out1 = new Rete.Output('out', "", autoSocket);
+        return getNodeControllers(subtype, node).addInput(in1).addInput(in2).addOutput(out1);
       }
       worker(node, inputs, outputs) {
         outputs['num'] = node.data.num;
@@ -427,9 +463,11 @@ function startEditor(jsonObj){
         }else if(type == "sink"){
           componentClasses[type+jsonType[subtype]["name"]] = getSink(type, jsonType[subtype]["name"], jsonType[subtype])
           //console.log("sink");
-        }else{
+        }else if(type == "operation"){
           componentClasses[type+jsonType[subtype]["name"]] = getOperator(type, jsonType[subtype]["name"], jsonType[subtype])
           //console.log("op");
+        }else{
+          componentClasses[type+jsonType[subtype]["name"]] = getJoin(type, jsonType[subtype]["name"], jsonType[subtype])
         }
       }
     }
@@ -453,7 +491,7 @@ function startEditor(jsonObj){
         editor.use(AreaPlugin);
         editor.use(CommentPlugin.default);
         editor.use(HistoryPlugin);
-        //editor.use(ConnectionMasteryPlugin.default);
+        editor.use(ConnectionMasteryPlugin.default);
         editor.use(AlightRenderPlugin);
         editor.use(DockPlugin.default, {
               container: document.querySelector('.dock'),
