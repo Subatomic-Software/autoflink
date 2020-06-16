@@ -1,0 +1,65 @@
+{
+  "file1":{
+    "function":"source",
+    "type":"file",
+    "outputs":["union1"],
+    "file":{
+      "directory":"/home/slots/IdeaProjects/autoflink/test/inputfiles/",
+      "format":{
+        "schema":"value,embed_value,embed_embed_value,val1,val2,val3",
+        "type":"csv"
+      }
+    }
+  },
+  "file2":{
+    "function":"source",
+    "type":"file",
+    "outputs":["union1"],
+    "file":{
+      "directory":"/home/slots/IdeaProjects/autoflink/test/inputfiles/",
+      "format":{
+        "schema":"value,embed_value,embed_embed_value,val1,val2,val3",
+        "type":"csv"
+      }
+    }
+  },
+  "file3":{
+    "function":"source",
+    "type":"file",
+    "outputs":["union2"],
+    "file":{
+      "directory":"/home/slots/IdeaProjects/autoflink/test/inputfiles/",
+      "format":{
+        "schema":"value,embed_value,embed_embed_value,val1,val2,val3",
+        "type":"csv"
+      }
+    }
+  },
+  "union1":{
+    "function":"join",
+    "type":"union",
+    "outputs":["filter2"],
+    "union":{}
+  },
+  "filter2": {
+    "function": "operation",
+    "type": "filter",
+    "filter": {
+      "function": "<",
+      "value": "val1",
+      "target": 4
+    },
+    "outputs":["union2"]
+  },
+  "union2":{
+    "function":"join",
+    "type":"union",
+    "outputs":["print1"],
+    "union":{}
+  },
+  "print1":{
+    "function":"sink",
+    "type":"print",
+    "print":{}
+  }
+}

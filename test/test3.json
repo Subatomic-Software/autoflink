@@ -9,42 +9,49 @@
         "schema": "value,embed_value,embed_embed_value,val1,val2,val3"
       }
     },
-    "filter2": {
-      "function": "operator",
-      "type": "filter",
-      "filter": {
-        "function": "<",
-        "value": "val1",
-        "target": 4
-      },
-      "kafkaSink2": {
-        "function": "sink",
-        "type": "kafka",
-        "kafka": {
-          "broker": "localhost:9092",
-          "topic": "testerout",
-          "format": {
-            "type": "csv"
-          }
-        }
-      },
-      "map3": {
-        "function": "operator",
-        "type": "map",
-        "map": {
-          "operation": "remove",
-          "target": "embed"
-        },
-        "filesink1": {
-          "function": "sink",
-          "type": "file",
-          "file": {
-            "directory": "/home/slots/IdeaProjects/autoflink/test/outputfiles/",
-            "format": {
-              "type": "csv"
-            }
-          }
-        }
+    "outputs":["filter2"]
+  },
+  "filter2": {
+    "function": "operation",
+    "type": "filter",
+    "filter": {
+      "function": "<",
+      "value": "val1",
+      "target": 4
+    },
+    "outputs":["kafkaSink2", "map3"]
+  },
+  "kafkaSink2": {
+    "function": "sink",
+    "type": "kafka",
+    "kafka": {
+      "broker": "localhost:9092",
+      "topic": "testerout",
+      "format": {
+        "type": "csv"
+      }
+    }
+  },
+  "print3": {
+    "function": "sink",
+    "type": "print"
+  },
+  "map3": {
+    "function": "operation",
+    "type": "map",
+    "map": {
+      "operation": "remove",
+      "target": "embed"
+    },
+    "outputs":["filesink1", "print3"]
+  },
+  "filesink1": {
+    "function": "sink",
+    "type": "file",
+    "file": {
+      "directory": "/home/slots/IdeaProjects/autoflink/test/outputfiles/",
+      "format": {
+        "type": "csv"
       }
     }
   },
@@ -59,33 +66,35 @@
         "type": "json"
       }
     },
-    "map1": {
-      "function": "operator",
-      "type": "map",
-      "map": {
-        "operation": "calc",
-        "target": "embedder_embedder_embedder_target",
-        "eval": "(embedder_embedded+40+value^(7)*embedder_embedder_embedded)/embedder_embedded"
-      },
-      "print1": {
-        "function": "sink",
-        "type": "print"
-      },
-      "kafkaSink1": {
-        "function": "sink",
-        "type": "kafka",
-        "kafka": {
-          "broker": "localhost:9092",
-          "topic": "testerout",
-          "format": {
-            "type": "json"
-          }
-        }
-      }
+    "outputs":["map1","print2"]
+  },
+  "map1": {
+    "function": "operation",
+    "type": "map",
+    "map": {
+      "operation": "calc",
+      "target": "embedder_embedder_embedder_target",
+      "eval": "(embedder_embedded+40+value^(7)*embedder_embedder_embedded)/embedder_embedded"
     },
-    "print2": {
-      "function": "sink",
-      "type": "print"
+    "outputs":["print1", "kafkaSink1"]
+  },
+  "print1": {
+    "function": "sink",
+    "type": "print"
+  },
+  "kafkaSink1": {
+    "function": "sink",
+    "type": "kafka",
+    "kafka": {
+      "broker": "localhost:9092",
+      "topic": "testerout",
+      "format": {
+        "type": "json"
+      }
     }
+  },
+  "print2": {
+    "function": "sink",
+    "type": "print"
   }
 }
