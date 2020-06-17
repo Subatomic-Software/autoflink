@@ -16,10 +16,15 @@ fileInput.addEventListener('change', function(e) {
     var reader = new FileReader();
     reader.onload = function(e) {
         applicationJson = reader.result;
-        console.log(applicationJson);
+        loadEditorFromJson();
+        //console.log(applicationJson);
     }
     reader.readAsText(file);
 });
+
+function loadEditor(){
+    $('input[id^=file]').click();
+}
 
 //LOAD NODE DRIVER JSON FROM SERVER
 console.log("Loading UI driver json..")
@@ -42,19 +47,21 @@ function clearEditor(){
     lastCleared = data;
 }
 
+//undo clear button
 function undoClear(){
     console.log("Loading from last clear...");
     editor.fromJSON(lastCleared);
 }
 
+//redraws whats on editor
 function redrawEditor(){
     console.log("Redrawing editor...");
     applicationJson = editorToStreamJson(false);
-    loadEditor();
+    loadEditorFromJson();
 }
 
 //LOAD EDITOR BUTTON
-function loadEditor(){
+function loadEditorFromJson(){
     console.log("Loading editor...");
     //clearEditor();
 
@@ -562,3 +569,30 @@ function openLog() {
     function closeLog() {
     document.getElementById("logForm").style.display = "none";
 }
+
+var jobState = document.getElementById("jobState");
+function worker() {
+  $.ajax({
+    url: 'http://localhost:8080/status',
+    success: function(data) {
+        console.log("logger..");
+        var response = JSON.parse(data);
+
+        console.log(response);
+        console.log(response.isRunning);
+        console.log(response.logAppend);
+
+        if(response.isRunning == true){
+            jobState.style.display = "block";
+        }else{
+            jobState.style.display = "none";
+        }
+
+        document.getElementById("logTextBox").value = document.getElementById("logTextBox").value + response.logAppend;
+    },
+    complete: function() {
+      setTimeout(worker, 5000);
+    }
+  });
+}
+worker();

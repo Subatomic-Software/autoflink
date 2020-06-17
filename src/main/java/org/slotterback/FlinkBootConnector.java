@@ -2,6 +2,7 @@ package org.slotterback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.core.execution.JobClient;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.FileUtils;
 
@@ -59,7 +60,7 @@ public class FlinkBootConnector {
         return schemas;
     }
 
-    public void startFlinkJob() throws Exception {
+    public JobClient startFlinkJob() throws Exception {
         if(killDirectory != null){
             try {
                 FileUtils.cleanDirectory(new File(killDirectory));
@@ -67,7 +68,8 @@ public class FlinkBootConnector {
                 new File(killDirectory).mkdirs();
             }
         }
-        env.executeAsync(jobName);
+        JobClient client = env.executeAsync(jobName);
+        return client;
     }
 
     public void stopFlinkJob() throws IOException {
