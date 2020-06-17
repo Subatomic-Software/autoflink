@@ -1,6 +1,7 @@
 html, body {
   height: 100%;
   width: 100%;
+  background-color: #605e5e  !important;
 }
 
 .node .control input, .node .input-control input {
@@ -16,6 +17,12 @@ select, input {
   width: 170px;
 }
 
+.btn {
+  background-color: #708aff !important;
+  border-color: #708aff !important;
+  color: white !important
+}
+
 .editor {
     display: flex;
     flex-wrap: nowrap;
@@ -23,26 +30,48 @@ select, input {
     height: 90vh;
 }
 
-.dock {
-    height: 100px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    white-space: nowrap;
+.node.selected {
+  background: #ffa32cc9;
+  border-color: #e3c000;
 }
 
-.dock-item {
+.socket {
+  border-color: #605e5e !important;
+} 
+
+.dock {
+    /* height: 50px; */
+    /* overflow-x: auto; */
+    overflow-y: auto !important;
+    flex-wrap: wrap;
+    /* white-space: nowrap; */
+
+}
+
+input {
+  color: white !important;
+  background-color: #605e5e !important;
+  border-color: #605e5e !important;
+}
+
+.dock-item{
     display: inline-block;
     vertical-align: top;
-    transform: scale(0.8);
+    /* transform: scaleY(0.7); */
     transform-origin: 50% 0;
     opacity: 0.7;
+}
+
+.dock-item .node{
+  max-height: 40px;
+  overflow: hidden;
 }
 
 .dock-item:hover {
    opacity: 0.9;
 }
 
-.container {
-    flex: 1;
-    overflow: hidden;
+.context-menu{
+  width: 10% !important;
 }
+
