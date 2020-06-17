@@ -554,3 +554,11 @@ function startEditor(jsonObj){
         console.log("Editor started");
     })();
 }
+
+function openLog() {
+    document.getElementById("logForm").style.display = "block";
+    }
+
+    function closeLog() {
+    document.getElementById("logForm").style.display = "none";
+}

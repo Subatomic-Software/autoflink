@@ -72,6 +72,7 @@ input {
 }
 
 .context-menu{
+  /*TODO add a min width to match longest entry*/
   width: 10% !important;
 }
 
