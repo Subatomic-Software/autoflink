@@ -32,6 +32,7 @@
 </head>
     <body>
             <div class="container-fluid">
+                <!--BUTTON HEADERS-->
                 <div class=row style="height: 5%"> 
                     <div class="col-2" >
                         <button class="btn" type="button" onclick="startStream();">Start Stream</button>
@@ -46,16 +47,12 @@
                         <input type="file" id="fileInput">
                     </div>
                 </div>
-
+                
+                <!--DOCK COLUMN-->
                 <div class="container-fluid row" style="height: 95%">
                     <div class="col-2" >
-                        <div class="row" style="height: 10%;">
-                            Logs here
-                            <label id="logger"></label>
-                        </div>
                         <div class="row dock">
                         </div>
-                        
                     </div>
                     <div class="col-10" >
                         <div class="editor" style="width:100%">
@@ -65,17 +62,15 @@
             </div>
         </div>
 
+        <!--LOG POPOUT BOX-->
         <button class="open-button" onclick="openLog()">Logs</button>
-
         <div class="log-popup" id="logForm">
-        <form class="form-container log-container">
-            <button type="button" class="btn cancel log-close" onclick="closeLog()">Close</button>
-
-            <textarea placeholder="No Logs Yet" name="logBox" id="logTextBox" readonly></textarea>
-        </form>
+            <form class="form-container log-container">
+                <button type="button" class="btn cancel log-close" onclick="closeLog()">Close</button>
+                <textarea placeholder="No Logs Yet" name="logBox" id="logTextBox" readonly></textarea>
+            </form>
         </div>
 
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
     </body>
