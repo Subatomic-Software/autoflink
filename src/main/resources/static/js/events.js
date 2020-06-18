@@ -7,7 +7,6 @@ $.get({
         var response = JSON.parse(data)
         logger.value = logger.value + response.logAppend;
         startEditor(JSON.parse(response.jsonOperators));
-        headless = false;
 
         if(response.isRunning == true){
             jobState.style.display = "block";
@@ -27,7 +26,7 @@ $.get({
     timeout: 3000,
     error: function(){
         console.log("hi");
-        startEditor(jsonLoader);
+        startEditor(JSON.parse(jsonLoader));
     }
 });
 
