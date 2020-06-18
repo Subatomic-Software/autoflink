@@ -72,13 +72,15 @@ function startEditor(jsonObj){
 
 //inputs in nodes
 class MessageControl extends Rete.Control {
-    constructor(emitter, val) {
+    constructor(emitter, val, {name=null, allowed=null}) {
         super(val);
-        //console.log(emitter)
-        this.template = '<input :value="val" @input="change($event)" placeholder="'+val+'"/>';
+        this.template = getTemplate(name, val, allowed);
         this.scope = {
             change: this.change.bind(this)
         };
+        if(name != null){
+            this.type = name;
+        }
     }
     change(e) {
         this.value = e.target.value;
@@ -92,6 +94,8 @@ class MessageControl extends Rete.Control {
     mounted() {
         if(this.getData(this.key) !== undefined){
             this.value = this.getData(this.key);
+        }else if(this.key === "name"){
+            this.value = generateName(this.type);
         }else{
             this.value = "";
         }
@@ -102,20 +106,47 @@ class MessageControl extends Rete.Control {
         this._alight.scan()
     }
 }
+function getTemplate(name, val, allowed){
+    if(allowed == null || !(val in allowed)){
+        if(name != null){
+            return '<input :value="val" @input="change($event)" disabled="disabled"/>';
+        }else{
+            return '<input :value="val" @input="change($event)" placeholder="'+val+'"/>';
+        }
+    }else{
+        var select = $('<select required @input="change($event)" ></select>');
+        select.append($('<option disabled selected hidden></option>').text(val))
+        for(index in allowed[val]){
+            select.append( $('<option></option>').attr('value', allowed[val][index]).text(allowed[val][index]) );
+        }
+        return select.prop('outerHTML');
+    }
+}
+function generateName(type){
+    var index = 0
+    var nodes = editor.nodes;
+    while(true){
+        if(!editor.nodes.some(e => e.data.name === type+index)){
+            return type+index;
+        }
+        index++;
+    }
+}
 
 //node controller
-function getNodeControllers(subtype, node){
-    var ctrl = new MessageControl(this.editor, 'name');
+function getNodeControllers(subtype, node, name){
+    var ctrl = new MessageControl(this.editor, 'name', {name: name});
     node = node.addControl(ctrl);
+    var allowed = subtype.allowed;
     for(val in subtype){
         if(val != "name" && val != "req" && val != "allowed"){
             if(!(subtype[val] instanceof Object)){
-                var ctrl = new MessageControl(this.editor, val);
+                var ctrl = new MessageControl(this.editor, val, {allowed: allowed});
                 node = node.addControl(ctrl)
             }else{
                 for(subval in subtype[val]){
                     if(subval != "name" && subval != "req" && subval != "allowed"){
-                        var ctrl = new MessageControl(this.editor, val+"."+subval);
+                        var ctrl = new MessageControl(this.editor, val+"."+subval, {allowed: allowed});
                         node = node.addControl(ctrl)
                     }
                 }
@@ -135,7 +166,7 @@ function getSource(type, name, subtype) {
       }
       builder(node) {
         var out1 = new Rete.Output('out', "", autoSocket);
-        return getNodeControllers(subtype, node).addOutput(out1);
+        return getNodeControllers(subtype, node, name+type).addOutput(out1);
       }
       worker(node, inputs, outputs) {
         outputs['name'] = node.data._name;
@@ -159,7 +190,7 @@ function getSink(type, name, subtype) {
       }
       builder(node) {
         var in1 = new Rete.Input('in0', "", autoSocket);
-        return getNodeControllers(subtype, node).addInput(in1);
+        return getNodeControllers(subtype, node, name+type).addInput(in1);
       }
       worker(node, inputs, outputs) {
         outputs['num'] = node.data.num;
@@ -181,7 +212,7 @@ function getOperator(type, name, subtype) {
       builder(node) {
         var in1 = new Rete.Input('in0', "", autoSocket);
         var out1 = new Rete.Output('out', "", autoSocket);
-        return getNodeControllers(subtype, node).addInput(in1).addOutput(out1);
+        return getNodeControllers(subtype, node, name+type).addInput(in1).addOutput(out1);
       }
       worker(node, inputs, outputs) {
         outputs['num'] = node.data.num;
@@ -204,7 +235,7 @@ function getJoin(type, name, subtype) {
         var in1 = new Rete.Input('in0', "", autoSocket);
         var in2 = new Rete.Input('in1', "", autoSocket);
         var out1 = new Rete.Output('out', "", autoSocket);
-        return getNodeControllers(subtype, node).addInput(in1).addInput(in2).addOutput(out1);
+        return getNodeControllers(subtype, node, name+type).addInput(in1).addInput(in2).addOutput(out1);
       }
       worker(node, inputs, outputs) {
         outputs['num'] = node.data.num;
