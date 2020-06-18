@@ -43,7 +43,6 @@ public class MainController {
 
     @PostConstruct
     public void initialize() {
-        editorWrapper.setStoredEditor("{}");
         editorWrapper.setLog("");
         logCatcher.setOutputStream(new ByteArrayOutputStream());
         logCatcher.setPrintStream(new PrintStream(logCatcher.getOutputStream()));
