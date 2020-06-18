@@ -1,18 +1,12 @@
-package org.slotterback.ui.controller;
+package org.slotterback.ui.controller.wrapper;
 
-import org.apache.flink.core.execution.JobClient;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 @Service
 public class LogCatcherWrapper {
-
-    public LogCatcherWrapper(){
-
-    }
 
     private ByteArrayOutputStream outputStream;
     private PrintStream printStream;

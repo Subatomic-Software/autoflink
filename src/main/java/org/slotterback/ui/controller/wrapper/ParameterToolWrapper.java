@@ -1,4 +1,4 @@
-package org.slotterback.ui.controller;
+package org.slotterback.ui.controller.wrapper;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,12 @@
-console.log("Begin main.js..")
+console.log("Begin main.js..");
+
+var jobState = document.getElementById("jobState");
+var fileInput = document.getElementById('fileInput');
+var logger = document.getElementById("logTextBox");
 
 var editor;
-var applicationJson = "";
+var jsonDriver = "";
+var jsonEditor;
 var autoSocket = new Rete.Socket('autoflink');
 var componentsMap = {};
 var dockCount = 0;
@@ -10,14 +15,13 @@ var lastCleared = {};
 var heightbuff = 300;
 var widthbuff = 500;
 
-var fileInput = document.getElementById('fileInput');
 fileInput.addEventListener('change', function(e) {
     var file = fileInput.files[0];
     var reader = new FileReader();
     reader.onload = function(e) {
-        applicationJson = reader.result;
-        loadEditorFromJson();
-        //console.log(applicationJson);
+        jsonDriver = reader.result;
+        loadEditorFromJson(jsonDriver);
+        //console.log(jsonDriver);
     }
     reader.readAsText(file);
 });
@@ -28,11 +32,42 @@ function loadEditor(){
 
 //LOAD NODE DRIVER JSON FROM SERVER
 console.log("Loading UI driver json..")
-$.get( "http://localhost:8080/load", function( result ) {
+$.get( "http://localhost:8080/load", function( data ) {
     console.log("UI driver json loaded");
-    jsonObj = JSON.parse(result)
-    startEditor(jsonObj);
+    var response = JSON.parse(data)
+    logger.value = logger.value + response.logAppend;
+    startEditor(JSON.parse(response.jsonOperators));
+
+    if(response.isRunning == true){
+        jobState.style.display = "block";
+        jsonDriver = response.jsonDriver;
+        loadEditorFromJson(jsonDriver);
+        logger.value = response.log;
+    }else{
+        jobState.style.display = "none";
+        if(response.jsonEditor !== undefined){
+            jsonEditor = JSON.parse(response.jsonEditor);
+            undoClear();
+            logger.value = response.log;
+        }
+    }
 });
+
+//save state on leave
+window.onbeforeunload = function(){
+    clearEditor();
+    var request = {};
+    request["jsonEditor"] = JSON.stringify(jsonEditor);
+    request["log"] = logger.value;
+    $.ajax({
+        url: 'http://localhost:8080/saveEditor',
+        type: 'PUT',
+        data: JSON.stringify(request),
+        contentType: "application/json; charset=utf-8",
+        dataType : "json",
+        async : false
+    });
+};
 
 //CLEAR EDITOR BUTTON
 function clearEditor(){
@@ -44,32 +79,32 @@ function clearEditor(){
         i--;
         editor.removeNode(nodes[i]);
     }
-    lastCleared = data;
+    jsonEditor = data;
 }
 
 //undo clear button
 function undoClear(){
     console.log("Loading from last clear...");
-    editor.fromJSON(lastCleared);
+    editor.fromJSON(jsonEditor);
 }
 
 //redraws whats on editor
 function redrawEditor(){
     console.log("Redrawing editor...");
-    applicationJson = editorToStreamJson(false);
-    loadEditorFromJson();
+    jsonDriver = editorToStreamJson(false);
+    loadEditorFromJson(jsonDriver);
 }
 
 //LOAD EDITOR BUTTON
-function loadEditorFromJson(){
+function loadEditorFromJson(jsonDriver){
     console.log("Loading editor...");
     //clearEditor();
 
-        if(!applicationJson){
+        if(!jsonDriver){
             console.log("Nothing loaded...");
             return;
         }
-        streamJson = JSON.parse(applicationJson);
+        streamJson = JSON.parse(jsonDriver);
         var reteJson = {};
 
         var nameToId = {};
@@ -236,7 +271,7 @@ function loadEditorFromJson(){
 function editorToStreamJson(toFile){
     console.log(toFile);
     json = JSON.stringify(generateStreamJsonFromEditor());
-    applicationJson = json;
+    jsonDriver = json;
     if(toFile){
         //TODO write to file
         alert("Stream driver generated:\n\n" + json);
@@ -310,28 +345,19 @@ function editorToStreamJson(toFile){
 
 //STARTS STREAM ON SERVER
 function startStream(){
-    if(applicationJson == ""){
-        $.ajax({
-            url: 'http://localhost:8080/startWithoutJson',
-            type: 'PUT',
-            success: function(result) {
-                console.log("started without json driver");
-                $("#logger").text(result);
-            }
-        });
-    }else{
-        $.ajax({
-            url: 'http://localhost:8080/startWithJson',
-            type: 'PUT',
-            data: applicationJson,
-            contentType: "application/json; charset=utf-8",
-            dataType   : "json",
-            success: function(result) {
-                console.log("started with json driver");
-                $("#logger").text(result);
-            }
-        });
-    }
+    console.log("json");
+    console.log(jsonDriver);
+    $.ajax({
+        url: 'http://localhost:8080/start',
+        type: 'PUT',
+        data: jsonDriver,
+        contentType: "application/json; charset=utf-8",
+        dataType   : "json",
+        success: function(result) {
+            console.log("started with json driver");
+            $("#logger").text(result);
+        }
+    });
 }
 
 //STOPS STREAM ON SERVER
@@ -514,52 +540,50 @@ function startEditor(jsonObj){
     console.log("Component map built");
 
     console.log("Starting editor..");
-    (async () => {
-        var components = [];
-        var container = document.querySelector('#rete');
-        Object.keys(componentClasses).forEach(function(key) {
-            var tmp = new componentClasses[key];
-            components.push(tmp);
-            componentsMap[key] = tmp;
-            dockCount++;
+    var components = [];
+    var container = document.querySelector('#rete');
+    Object.keys(componentClasses).forEach(function(key) {
+        var tmp = new componentClasses[key];
+        components.push(tmp);
+        componentsMap[key] = tmp;
+        dockCount++;
+    });
+
+    editor = new Rete.NodeEditor('demo@0.1.0', container);
+    editor.use(ConnectionPlugin.default);
+    //editor.use(VueRenderPlugin.default);
+    editor.use(ContextMenuPlugin.default);
+    editor.use(AreaPlugin);
+    editor.use(CommentPlugin.default);
+    editor.use(HistoryPlugin);
+    editor.use(ConnectionMasteryPlugin.default);
+    editor.use(AlightRenderPlugin);
+    editor.use(DockPlugin.default, {
+          container: document.querySelector('.dock'),
+          itemClass: 'dock-item', // default: dock-item
+          plugins: [VueRenderPlugin.default] // render plugins
         });
 
-        editor = new Rete.NodeEditor('demo@0.1.0', container);
-        editor.use(ConnectionPlugin.default);
-        //editor.use(VueRenderPlugin.default);
-        editor.use(ContextMenuPlugin.default);
-        editor.use(AreaPlugin);
-        editor.use(CommentPlugin.default);
-        editor.use(HistoryPlugin);
-        editor.use(ConnectionMasteryPlugin.default);
-        editor.use(AlightRenderPlugin);
-        editor.use(DockPlugin.default, {
-              container: document.querySelector('.dock'),
-              itemClass: 'dock-item', // default: dock-item
-              plugins: [VueRenderPlugin.default] // render plugins
-            });
+    var engine = new Rete.Engine('demo@0.1.0');
 
-        var engine = new Rete.Engine('demo@0.1.0');
+    components.map(c => {
+        editor.register(c);
+        engine.register(c);
+    });
 
-        components.map(c => {
-            editor.register(c);
-            engine.register(c);
-        });
+    editor.on('zoom', ({ source }) => {
+        return source !== 'dblclick';
+    });
 
-        editor.on('zoom', ({ source }) => {
-            return source !== 'dblclick';
-        });
+    editor.on('process nodecreated noderemoved connectioncreated connectionremoved', async () => {
+        await engine.abort();
+        //await engine.process(editor.toJSON());
+    });
 
-        editor.on('process nodecreated noderemoved connectioncreated connectionremoved', async () => {
-            await engine.abort();
-            //await engine.process(editor.toJSON());
-        });
-
-        editor.view.resize();
-        AreaPlugin.zoomAt(editor);
-        editor.trigger('process');
-        console.log("Editor started");
-    })();
+    editor.view.resize();
+    AreaPlugin.zoomAt(editor);
+    editor.trigger('process');
+    console.log("Editor started");
 }
 
 function openLog() {
@@ -570,7 +594,6 @@ function openLog() {
     document.getElementById("logForm").style.display = "none";
 }
 
-var jobState = document.getElementById("jobState");
 function worker() {
   $.ajax({
     url: 'http://localhost:8080/status',
@@ -588,7 +611,7 @@ function worker() {
             jobState.style.display = "none";
         }
 
-        document.getElementById("logTextBox").value = document.getElementById("logTextBox").value + response.logAppend;
+        logger.value = logger.value + response.logAppend;
     },
     complete: function() {
       setTimeout(worker, 5000);
