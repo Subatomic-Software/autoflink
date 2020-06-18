@@ -1,41 +1,99 @@
 //LOAD NODE DRIVER JSON FROM SERVER
 console.log("Loading UI driver json..")
-$.get( "http://localhost:8080/load", function( data ) {
-    console.log("UI driver json loaded");
-    var response = JSON.parse(data)
-    logger.value = logger.value + response.logAppend;
-    startEditor(JSON.parse(response.jsonOperators));
+$.get({
+    url: "http://localhost:8080/load",
+    success: function( data ) {
+        console.log("UI driver json loaded");
+        var response = JSON.parse(data)
+        logger.value = logger.value + response.logAppend;
+        startEditor(JSON.parse(response.jsonOperators));
+        headless = false;
 
-    if(response.isRunning == true){
-        jobState.style.display = "block";
-        jsonDriver = response.jsonDriver;
-        loadEditorFromJson(jsonDriver);
-        logger.value = response.log;
-    }else{
-        jobState.style.display = "none";
-        if(response.jsonEditor !== undefined && response.jsonEditor !== null){
-            jsonEditor = JSON.parse(response.jsonEditor);
-            undoClear();
+        if(response.isRunning == true){
+            jobState.style.display = "block";
+            jsonDriver = response.jsonDriver;
+            loadEditorFromJson(jsonDriver);
             logger.value = response.log;
+        }else{
+            jobState.style.display = "none";
+            if(response.jsonEditor !== undefined && response.jsonEditor !== null){
+                jsonEditor = JSON.parse(response.jsonEditor);
+                undoClear();
+                logger.value = response.log;
+            }
         }
+        serverConnect();
+    },
+    timeout: 3000,
+    error: function(){
+        console.log("hi");
+        startEditor(jsonLoader);
     }
 });
 
-//save state on leave
-window.onbeforeunload = function(){
-    var jsonEditor = clearEditor();
-    var request = {};
-    request["jsonEditor"] = JSON.stringify(jsonEditor);
-    request["log"] = logger.value;
-    $.ajax({
-        url: 'http://localhost:8080/saveEditor',
-        type: 'PUT',
-        data: JSON.stringify(request),
-        contentType: "application/json; charset=utf-8",
-        dataType : "json",
-        async : false
-    });
-};
+function serverConnect(){
+
+    //save state on leave
+    window.onbeforeunload = function(){
+        var jsonEditor = clearEditor();
+        var request = {};
+        request["jsonEditor"] = JSON.stringify(jsonEditor);
+        request["log"] = logger.value;
+        $.ajax({
+            url: 'http://localhost:8080/saveEditor',
+            type: 'PUT',
+            data: JSON.stringify(request),
+            contentType: "application/json; charset=utf-8",
+            dataType : "json",
+            async : false
+        });
+    };
+
+    //STARTS STREAM ON SERVER
+    function startStream(){
+        console.log("json");
+        console.log(jsonDriver);
+        $.ajax({
+            url: 'http://localhost:8080/start',
+            type: 'PUT',
+            data: jsonDriver,
+            contentType: "application/json; charset=utf-8",
+            dataType   : "json",
+            success: function(result) {
+                console.log("started with json driver");
+                $("#logger").text(result);
+            }
+        });
+    }
+
+    //STOPS STREAM ON SERVER
+    function stopStream(){
+        $.get( "http://localhost:8080/stop", function( result ) {
+            console.log("stopped");
+            $("#logger").text(result);
+        });
+    }
+
+    //gets status from server
+    function getStatus() {
+      $.ajax({
+        url: 'http://localhost:8080/status',
+        success: function(data) {
+            var response = JSON.parse(data);
+            if(response.isRunning == true){
+                jobState.style.display = "block";
+            }else{
+                jobState.style.display = "none";
+            }
+            logger.value = logger.value + response.logAppend;
+        },
+        complete: function() {
+          setTimeout(getStatus, 5000);
+        }
+      });
+    }
+    getStatus();
+}
 
 //load file into editor
 function loadEditor(){
@@ -325,32 +383,6 @@ function editorToStreamJson(toFile){
     }
 }
 
-
-//STARTS STREAM ON SERVER
-function startStream(){
-    console.log("json");
-    console.log(jsonDriver);
-    $.ajax({
-        url: 'http://localhost:8080/start',
-        type: 'PUT',
-        data: jsonDriver,
-        contentType: "application/json; charset=utf-8",
-        dataType   : "json",
-        success: function(result) {
-            console.log("started with json driver");
-            $("#logger").text(result);
-        }
-    });
-}
-
-//STOPS STREAM ON SERVER
-function stopStream(){
-    $.get( "http://localhost:8080/stop", function( result ) {
-        console.log("stopped");
-        $("#logger").text(result);
-    });
-}
-
 //opens/closes log tab
 function openLog() {
     document.getElementById("logForm").style.display = "block";
@@ -359,23 +391,3 @@ function openLog() {
     function closeLog() {
     document.getElementById("logForm").style.display = "none";
 }
-
-//gets status from server
-function getStatus() {
-  $.ajax({
-    url: 'http://localhost:8080/status',
-    success: function(data) {
-        var response = JSON.parse(data);
-        if(response.isRunning == true){
-            jobState.style.display = "block";
-        }else{
-            jobState.style.display = "none";
-        }
-        logger.value = logger.value + response.logAppend;
-    },
-    complete: function() {
-      setTimeout(getStatus, 5000);
-    }
-  });
-}
-getStatus();
