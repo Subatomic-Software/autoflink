@@ -26,6 +26,7 @@ $.get({
     timeout: 3000,
     error: function(){
         console.log("hi");
+
         startEditor(JSON.parse(jsonLoader));
     }
 });
