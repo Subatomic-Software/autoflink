@@ -48,6 +48,7 @@ function startEditor(jsonObj){
       itemClass: 'dock-item', // default: dock-item
       plugins: [VueRenderPlugin.default] // render plugins
     });
+    editor.use(MinimapPlugin.default);
 
 
     components.map(c => {
