@@ -42,30 +42,24 @@ function startEditor(jsonObj){
     editor.use(HistoryPlugin);
     editor.use(ConnectionMasteryPlugin.default);
     editor.use(AlightRenderPlugin);
+    editor.use(ReadonlyPlugin.default, { enabled: false });
     editor.use(DockPlugin.default, {
-          container: document.querySelector('.dock'),
-          itemClass: 'dock-item', // default: dock-item
-          plugins: [VueRenderPlugin.default] // render plugins
-        });
+      container: document.querySelector('.dock'),
+      itemClass: 'dock-item', // default: dock-item
+      plugins: [VueRenderPlugin.default] // render plugins
+    });
 
-    var engine = new Rete.Engine('demo@0.1.0');
 
     components.map(c => {
         editor.register(c);
-        engine.register(c);
     });
 
     editor.on('zoom', ({ source }) => {
         return source !== 'dblclick';
     });
 
-    editor.on('process nodecreated noderemoved connectioncreated connectionremoved', async () => {
-        await engine.abort();
-        //await engine.process(editor.toJSON());
-    });
-
     editor.view.resize();
-    AreaPlugin.zoomAt(editor);
+    //AreaPlugin.zoomAt(editor);
     editor.trigger('process');
     console.log("Editor started");
 }
@@ -116,8 +110,10 @@ function getTemplate(name, val, allowed, data){
     }else{
         var select = $('<select required @input="change($event)" ></select>');
         select.append($('<option disabled selected hidden></option>').text(val))
+        select.attr('onfocus', 'lockEditor(true)');
+        select.attr('onfocusout', 'lockEditor(false)');
         for(index in allowed[val]){
-            var option = $('<option></option>').attr('value', allowed[val][index]).text(allowed[val][index])
+            var option = $('<option></option>').attr('value', allowed[val][index]).text(allowed[val][index]);
             if(data[val] !== undefined && data[val] === allowed[val][index]){
                 option.attr('selected', 'selected')
             }
@@ -135,6 +131,9 @@ function generateName(type){
         }
         index++;
     }
+}
+function lockEditor(lock){
+    editor.trigger('readonly', lock);
 }
 
 //node controller
