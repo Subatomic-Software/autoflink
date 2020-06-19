@@ -5,40 +5,38 @@ $.get({
     success: function( data ) {
         console.log("UI driver json loaded");
         var response = JSON.parse(data)
-        logger.value = logger.value + response.logAppend;
+        logger.value = response.log;
         startEditor(JSON.parse(response.jsonOperators));
 
         if(response.isRunning == true){
             jobState.style.display = "block";
             jsonDriver = response.jsonDriver;
             loadEditorFromJson(jsonDriver);
-            logger.value = response.log;
         }else{
             jobState.style.display = "none";
             if(response.jsonEditor !== undefined && response.jsonEditor !== null){
                 jsonEditor = JSON.parse(response.jsonEditor);
                 undoClear();
-                logger.value = response.log;
             }
         }
         serverConnect();
     },
     timeout: 3000,
     error: function(){
-        console.log("hi");
-
+        jobState.style.display = "none";
         startEditor(JSON.parse(jsonLoader));
     }
 });
 
 function serverConnect(){
+    console.log("server connected...");
 
     //save state on leave
     window.onbeforeunload = function(){
         var jsonEditor = clearEditor();
         var request = {};
         request["jsonEditor"] = JSON.stringify(jsonEditor);
-        request["log"] = logger.value;
+        request["log"] = logger.value === undefined ? "" : logger.value;
         $.ajax({
             url: 'http://localhost:8080/saveEditor',
             type: 'PUT',
@@ -50,7 +48,7 @@ function serverConnect(){
     };
 
     //STARTS STREAM ON SERVER
-    function startStream(){
+    startStream = function() {
         console.log("json");
         console.log(jsonDriver);
         $.ajax({
@@ -67,7 +65,7 @@ function serverConnect(){
     }
 
     //STOPS STREAM ON SERVER
-    function stopStream(){
+    stopStream =function() {
         $.get( "http://localhost:8080/stop", function( result ) {
             console.log("stopped");
             $("#logger").text(result);
@@ -75,7 +73,7 @@ function serverConnect(){
     }
 
     //gets status from server
-    function getStatus() {
+    getStatus = function() {
       $.ajax({
         url: 'http://localhost:8080/status',
         success: function(data) {

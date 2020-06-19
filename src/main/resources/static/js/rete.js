@@ -72,9 +72,9 @@ function startEditor(jsonObj){
 
 //inputs in nodes
 class MessageControl extends Rete.Control {
-    constructor(emitter, val, {name=null, allowed=null}) {
+    constructor(emitter, val, {name=null, allowed=null, data=null}) {
         super(val);
-        this.template = getTemplate(name, val, allowed);
+        this.template = getTemplate(name, val, allowed, data);
         this.scope = {
             change: this.change.bind(this)
         };
@@ -106,7 +106,7 @@ class MessageControl extends Rete.Control {
         this._alight.scan()
     }
 }
-function getTemplate(name, val, allowed){
+function getTemplate(name, val, allowed, data){
     if(allowed == null || !(val in allowed)){
         if(name != null){
             return '<input :value="val" @input="change($event)" disabled="disabled"/>';
@@ -117,7 +117,11 @@ function getTemplate(name, val, allowed){
         var select = $('<select required @input="change($event)" ></select>');
         select.append($('<option disabled selected hidden></option>').text(val))
         for(index in allowed[val]){
-            select.append( $('<option></option>').attr('value', allowed[val][index]).text(allowed[val][index]) );
+            var option = $('<option></option>').attr('value', allowed[val][index]).text(allowed[val][index])
+            if(data[val] !== undefined && data[val] === allowed[val][index]){
+                option.attr('selected', 'selected')
+            }
+            select.append(option);
         }
         return select.prop('outerHTML');
     }
@@ -140,13 +144,14 @@ function getNodeControllers(subtype, node, name){
     var allowed = subtype.allowed;
     for(val in subtype){
         if(val != "name" && val != "req" && val != "allowed"){
+            var data = node.data;
             if(!(subtype[val] instanceof Object)){
-                var ctrl = new MessageControl(this.editor, val, {allowed: allowed});
+                var ctrl = new MessageControl(this.editor, val, {allowed: allowed, data: data});
                 node = node.addControl(ctrl)
             }else{
                 for(subval in subtype[val]){
                     if(subval != "name" && subval != "req" && subval != "allowed"){
-                        var ctrl = new MessageControl(this.editor, val+"."+subval, {allowed: allowed});
+                        var ctrl = new MessageControl(this.editor, val+"."+subval, {allowed: allowed, data: data});
                         node = node.addControl(ctrl)
                     }
                 }

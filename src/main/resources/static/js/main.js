@@ -4,6 +4,10 @@ var jobState = document.getElementById("jobState");
 var fileInput = document.getElementById('fileInput');
 var logger = document.getElementById("logTextBox");
 
+var startStream;
+var stopStream;
+var getStatus;
+
 var editor;
 var jsonDriver = "";
 var jsonEditor;
