@@ -18,9 +18,14 @@ select, input {
 }
 
 .btn {
-  background-color: #708aff !important;
-  border-color: #708aff !important;
-  color: white !important
+  background: rgba(110, 136, 255, 0.8) !important;
+  border: 2px solid #4e58bf !important;
+  color: white !important;
+  border-radius: 10px;
+}
+
+.btn:hover {
+   opacity: 0.9;
 }
 
 .editor {
@@ -59,7 +64,6 @@ input {
     vertical-align: top;
     /* transform: scaleY(0.7); */
     transform-origin: 50% 0;
-    opacity: 0.7;
 }
 
 .dock-item .node{
@@ -69,6 +73,11 @@ input {
 
 .dock-item:hover {
    opacity: 0.9;
+}
+
+.row.dock {
+    position: absolute;
+    bottom: 10px;
 }
 
 .context-menu{
