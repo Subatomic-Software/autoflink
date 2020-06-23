@@ -5,6 +5,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.0.1/jquery-migrate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.6/vue.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
 
@@ -29,6 +31,7 @@
 
     <script src="js/rete.js" defer></script>
     <script src="js/main.js" defer></script>
+    <script src="js/schemas.js" defer></script>
     <script src="js/events.js" defer></script>
 
     <link rel="stylesheet" href="css/main.css">
@@ -51,7 +54,9 @@
                         <button class="btn btn" type="button" onclick="clearEditor();">Clear Editor</button>
                         <button class="btn btn" type="button" onclick="undoClear();">Undo Clear</button>
                         <button class="btn btn" type="button" onclick="loadEditor();">Load Editor</button>
+                        <button class="btn btn" type="button" onclick="loadSchemaFile();">Load Schema</button>
                         <input type="file" id="fileInput"  style="visibility: hidden">
+                        <input type="file" id="schemaInput"  style="visibility: hidden">
                     </div>
                 </div>
                 

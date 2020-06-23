@@ -1,10 +1,20 @@
 {
-   "type" : "record",
-   "namespace" : "org.slotterback",
-   "name" : "Test2",
-   "fields" : [
-      { "name" : "key" , "type" : "string" },
-      { "name" : "value1" , "type" : "int" },
-      { "name" : "value2" , "type" : "string" }
-   ]
+    "type" : "record",
+    "namespace" : "org.slotterback",
+    "name" : "Test2",
+    "fields" : [
+        { "name" : "key" , "type" : "string" },
+        { "name" : "value1" , "type" : "int" },
+        { "name" : "value2" , "type" : "string" },
+        {"name" : "embedderType", "type" : {
+           "type" : "record",
+           "name" : "embedder",
+           "fields" : [
+              {"name" : "val2",
+               "type" : "int"},
+              {"name" : "val1",
+               "type" : "int"}
+            ]}
+        }
+    ]
 }

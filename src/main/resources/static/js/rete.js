@@ -106,6 +106,9 @@ function getTemplate(name, val, allowed, data){
         if(name != null){
             return '<input :value="val" @input="change($event)" disabled="disabled"/>';
         }else{
+            if(val === "value"){
+                return '<input id="variable" :value="val" @input="change($event)" placeholder="'+val+'"/>';
+            }
             return '<input :value="val" @input="change($event)" placeholder="'+val+'"/>';
         }
     }else{

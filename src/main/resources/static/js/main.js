@@ -2,6 +2,7 @@ console.log("Begin main.js..");
 
 var jobState = document.getElementById("jobState");
 var fileInput = document.getElementById('fileInput');
+var schemaInput = document.getElementById('schemaInput');
 var logger = document.getElementById("logTextBox");
 
 var startStream;
@@ -19,3 +20,10 @@ var lastCleared = {};
 
 var heightbuff = 300;
 var widthbuff = 500;
+
+var variables = [];
+var schemas = {};
+var schemasToSend = {};
+var schemaToValues = {};
+var embedSeperator = "."
+
