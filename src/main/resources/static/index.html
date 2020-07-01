@@ -35,7 +35,7 @@
     <script src="js/events.js" defer></script>
 
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/log-popout.css">
+    <link rel="stylesheet" href="css/popout-windows.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
 </head>
@@ -44,16 +44,16 @@
                 <!--BUTTON HEADERS-->
                 <div class=row>
                     <div class="col-2" >
-                        <button class="btn" type="button" onclick="startStream();">Start Stream</button>
-                        <button class="btn" type="button" onclick="stopStream();">Stop Stream</button>
+                        <button class="btn default-btn" type="button" onclick="startStream();">Start Stream</button>
+                        <button class="btn default-btn" type="button" onclick="stopStream();">Stop Stream</button>
                         <div class="spinner-grow text-success" id="jobState"></div>
                     </div>
                     <div class="col-10" >
-                        <button class="btn" type="button" onclick="editorToStreamJson(true);">Generate Json</button>
-                        <button class="btn" type="button" onclick="redrawEditor();">Redraw Editor</button>
-                        <button class="btn" type="button" onclick="clearEditor();">Clear Editor</button>
-                        <button class="btn" type="button" onclick="undoClear();">Undo Clear</button>
-                        <button class="btn" onclick="openSchema()">Schema</button>
+                        <button class="btn default-btn" type="button" onclick="editorToStreamJson(true);">Generate Json</button>
+                        <button class="btn default-btn" type="button" onclick="redrawEditor();">Redraw Editor</button>
+                        <button class="btn default-btn" type="button" onclick="clearEditor();">Clear Editor</button>
+                        <button class="btn default-btn" type="button" onclick="undoClear();">Undo Clear</button>
+                        <button class="btn default-btn" onclick="openSchema()">Schema</button>
                         
                     </div>
                 </div>
@@ -76,19 +76,19 @@
         <div class="schema-editor" id="schemaForm">
             <div class="row" class="row" style="height: 5%">
                 <button type="button" class="btn btn-danger log-close" onclick="closeSchema()" style="margin-left: 2%;">Close</button>
-                <button class="btn" type="button" onclick="loadSchemaFile();">Load Schema</button>
+                <button class="btn default-btn" type="button" onclick="loadSchemaFile();">Load Schema</button>
                 <input type="file" id="fileInput"  style="visibility: hidden">
             </div>
             <div class="row" style="height: 70%">
                 <div class="col-6">
                     <div class="schema-editor-container">
                         <textarea placeholder="None" name="schemaTextBox" id="schemaTextBox" class="schema-text-editor"></textarea>
-                        <button class="btn" type="button" onclick="bindme()">Add</button>
+                        <button class="btn default-btn" type="button" onclick="bindme()">Add</button>
                     </div>                
                 </div>
                 <div class="col-6">
                     <div class="schema-list-container" id="schema-list-container">Schema list goes here</div>
-                    <button class="btn" type="button" onclick="bindme()">Delete</button>
+                    <button class="btn default-btn" type="button" onclick="bindme()">Delete</button>
                 </div>
             </div>
         </div>

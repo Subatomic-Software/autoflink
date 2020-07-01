@@ -1,12 +1,11 @@
+/*BASE SETTINGS */
 html, body {
   height: 100%;
   width: 100%;
   background-color: #605e5e  !important;
 }
 
-.node .control input, .node .input-control input {
-  width: 140px;
-}
+/*FORM SETTINGS*/
 select, input {
   width: 100%;
   border-radius: 30px;
@@ -15,9 +14,12 @@ select, input {
   border: 1px solid #999;
   font-size: 110%;
   width: 170px;
+  color: white !important;
+  background-color: #605e5e !important;
+  border-color: #605e5e !important;
 }
 
-.btn {
+.default-btn {
   background: rgba(110, 136, 255, 0.8) !important;
   border: 2px solid #4e58bf !important;
   color: white !important;
@@ -28,11 +30,22 @@ select, input {
    opacity: 0.9;
 }
 
+/* EDITOR CANVAS SETTINGS */
 .editor {
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
     height: 90vh;
+}
+
+.context-menu{
+  /*TODO add a min width to match longest entry*/
+  width: 10% !important;
+}
+
+/*COMPONENT DOCK SETTINGS*/
+.node .control input, .node .input-control input {
+  width: 140px;
 }
 
 .node.selected {
@@ -53,13 +66,7 @@ select, input {
 
 }
 
-input {
-  color: white !important;
-  background-color: #605e5e !important;
-  border-color: #605e5e !important;
-}
-
-.dock-item{
+.dock-item {
     display: inline-block;
     vertical-align: top;
     /* transform: scaleY(0.7); */
@@ -78,11 +85,6 @@ input {
 .row.dock {
     position: absolute;
     bottom: 10px;
-}
-
-.context-menu{
-  /*TODO add a min width to match longest entry*/
-  width: 10% !important;
 }
 
 
