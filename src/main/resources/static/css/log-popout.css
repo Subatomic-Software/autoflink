@@ -1,4 +1,4 @@
-/* Button used to open the chat form - fixed at the bottom of the page */
+
 .open-button {
     background-color: #555;
     color: white;
@@ -10,40 +10,76 @@
     bottom: 23px;
     right: 28px;
     width: 280px;
+    border: 1px solid #4e58bf;
   }
   
-  /* The popup chat - hidden by default */
+  /* The popup log - hidden by default */
   .log-popup {
     display: none;
     position: fixed;
     bottom: 0;
-    border: 3px solid #f1f1f1;
+    border: 1px solid #4e58bf;
     z-index: 9;
     width: 100%;
     resize: both !important;
     overflow: auto !important;
     max-height: 30%;
   }
+   /* The schema editor - hidden by default */
+  .schema-editor {
+    display: none;
+    position: fixed;
+    top: 5%;
+    right: 5%;
+    left: 5%;
+    border: 3px solid #4e58bf;
+    z-index: 9;
+    width: 100%;
+    resize: both !important;
+    overflow: auto !important;
+    height: 90%;
+    width: 90%;
+    background-color:rgba(96, 94, 94, 0.8);
+  }
+
+  .schema-editor-container {
+    height: 50% !important;
+    margin: 2%;
+  }
   
+ /*Schema editor/ text area */
+ .schema-text-editor {
+  width: 100%;
+  height: 50%;
+  padding: 15px;
+  border: none;
+  background: #605e5e;
+  resize: none;
+  min-height: 100px;
+  color: white;
+  border: 3px solid #4e58bf;
+}
+
   /* Add styles to the form container */
   .form-container {
     padding: 10px;
-    background-color: white;
+    background-color: #605e5e;
   }
   
   .log-container{
     width: 100% !important;
   }
 
-  /* Full-width textarea */
-  .form-container textarea {
+  /*log text container / text area */
+  .log-text-area {
     width: 100%;
     padding: 15px;
     margin: 5px 0 22px 0;
     border: none;
-    background: #f1f1f1;
+    background: #605e5e;
     resize: none;
     min-height: 100px;
+    color: white;
   }
   
   /* When the textarea gets focus, do something */
@@ -51,8 +87,7 @@
     background-color: #ddd;
     outline: none;
   }
-  
-  /* Set a style for the submit/send button */
+
   .form-container .btn {
     background-color: #4CAF50;
     color: white;

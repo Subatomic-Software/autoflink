@@ -389,3 +389,12 @@ function openLog() {
     function closeLog() {
     document.getElementById("logForm").style.display = "none";
 }
+
+//opens/closes Schema window
+function openSchema() {
+    document.getElementById("schemaForm").style.display = "block";
+    }
+
+    function closeSchema() {
+    document.getElementById("schemaForm").style.display = "none";
+}

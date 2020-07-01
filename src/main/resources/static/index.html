@@ -49,14 +49,12 @@
                         <div class="spinner-grow text-success" id="jobState"></div>
                     </div>
                     <div class="col-10" >
-                        <button class="btn btn" type="button" onclick="editorToStreamJson(true);">Generate Json</button>
-                        <button class="btn btn" type="button" onclick="redrawEditor();">Redraw Editor</button>
-                        <button class="btn btn" type="button" onclick="clearEditor();">Clear Editor</button>
-                        <button class="btn btn" type="button" onclick="undoClear();">Undo Clear</button>
-                        <button class="btn btn" type="button" onclick="loadEditor();">Load Editor</button>
-                        <button class="btn btn" type="button" onclick="loadSchemaFile();">Load Schema</button>
-                        <input type="file" id="fileInput"  style="visibility: hidden">
-                        <input type="file" id="schemaInput"  style="visibility: hidden">
+                        <button class="btn" type="button" onclick="editorToStreamJson(true);">Generate Json</button>
+                        <button class="btn" type="button" onclick="redrawEditor();">Redraw Editor</button>
+                        <button class="btn" type="button" onclick="clearEditor();">Clear Editor</button>
+                        <button class="btn" type="button" onclick="undoClear();">Undo Clear</button>
+                        <button class="btn" onclick="openSchema()">Schema</button>
+                        
                     </div>
                 </div>
                 
@@ -73,13 +71,34 @@
                 </div>
             </div>
         </div>
+        
+        <!--SCHEMA INTERFACE-->
+        <div class="schema-editor" id="schemaForm">
+            <div class="row" class="row" style="height: 5%">
+                <button type="button" class="btn btn-danger log-close" onclick="closeSchema()" style="margin-left: 2%;">Close</button>
+                <button class="btn" type="button" onclick="loadSchemaFile();">Load Schema</button>
+                <input type="file" id="fileInput"  style="visibility: hidden">
+            </div>
+            <div class="row" style="height: 70%">
+                <div class="col-6">
+                    <div class="schema-editor-container">
+                        <textarea placeholder="None" name="schemaTextBox" id="schemaTextBox" class="schema-text-editor"></textarea>
+                        <button class="btn" type="button" onclick="bindme()">Add</button>
+                    </div>                
+                </div>
+                <div class="col-6">
+                    <div class="schema-list-container" id="schema-list-container">Schema list goes here</div>
+                    <button class="btn" type="button" onclick="bindme()">Delete</button>
+                </div>
+            </div>
+        </div>
 
         <!--LOG POPOUT BOX-->
         <button class="open-button" onclick="openLog()">Logs</button>
         <div class="log-popup" id="logForm">
             <form class="form-container log-container">
                 <button type="button" class="btn cancel log-close" onclick="closeLog()">Close</button>
-                <textarea placeholder="No Logs Yet" name="logBox" id="logTextBox" readonly></textarea>
+                <textarea placeholder="No Logs Yet" name="logBox" id="logTextBox" class="log-text-area" readonly></textarea>
             </form>
         </div>
 
