@@ -28,12 +28,6 @@
     <script src="https://cdn.muicss.com/mui-0.9.34/js/mui.min.js"></script>
     <script src="https://rawgit.com/alertifyjs/alertify.js/master/dist/js/alertify.js"></script>
 
-
-    <script src="js/rete.js" defer></script>
-    <script src="js/main.js" defer></script>
-    <script src="js/schemas.js" defer></script>
-    <script src="js/events.js" defer></script>
-
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/popout-windows.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
@@ -53,8 +47,9 @@
                         <button class="btn default-btn" type="button" onclick="redrawEditor();">Redraw Editor</button>
                         <button class="btn default-btn" type="button" onclick="clearEditor();">Clear Editor</button>
                         <button class="btn default-btn" type="button" onclick="undoClear();">Undo Clear</button>
+                        <button class="btn default-btn" type="button" onclick="loadEditor();">Load Editor</button>
                         <button class="btn default-btn" onclick="openSchema()">Schema</button>
-                        
+                        <input type="file" id="fileInput"  style="visibility: hidden">
                     </div>
                 </div>
                 
@@ -76,19 +71,20 @@
         <div class="schema-editor" id="schemaForm">
             <div class="row" class="row" style="height: 5%">
                 <button type="button" class="btn btn-danger log-close" onclick="closeSchema()" style="margin-left: 2%;">Close</button>
-                <button class="btn default-btn" type="button" onclick="loadSchemaFile();">Load Schema</button>
-                <input type="file" id="fileInput"  style="visibility: hidden">
+                <button class="btn default-btn" type="button" onclick="loadSchemaFile()">Load Schema</button>
+                <input type="file" id="schemaInput"  style="visibility: hidden">
             </div>
             <div class="row" style="height: 70%">
                 <div class="col-6">
                     <div class="schema-editor-container">
-                        <textarea placeholder="None" name="schemaTextBox" id="schemaTextBox" class="schema-text-editor"></textarea>
-                        <button class="btn default-btn" type="button" onclick="bindme()">Add</button>
+                        <textarea oninput="preloadSchema();" placeholder="None" name="schemaTextBox" id="schemaTextBox" class="schema-text-editor"></textarea>
+                        <button class="btn default-btn" type="button" onclick="addSchemaClick()">Add</button>
                     </div>                
                 </div>
                 <div class="col-6">
                     <div class="schema-list-container" id="schema-list-container">Schema list goes here</div>
-                    <button class="btn default-btn" type="button" onclick="bindme()">Delete</button>
+                    <select id="schemaSelect" multiple></select>
+                    <button class="btn default-btn" type="button" onclick="deleteSchemaSelect()">Delete</button>
                 </div>
             </div>
         </div>
@@ -104,6 +100,10 @@
 
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+        <script src="js/rete.js" defer></script>
+        <script src="js/main.js" defer></script>
+        <script src="js/schemas.js" defer></script>
+        <script src="js/events.js" defer></script>
     </body>
 
 </html>

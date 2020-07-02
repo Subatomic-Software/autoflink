@@ -44,6 +44,7 @@ public class MainController {
     @PostConstruct
     public void initialize() {
         editorWrapper.setLog("");
+        editorWrapper.setSchemas("");
         logCatcher.setOutputStream(new ByteArrayOutputStream());
         logCatcher.setPrintStream(new PrintStream(logCatcher.getOutputStream()));
         System.setOut(logCatcher.getPrintStream());
@@ -65,6 +66,7 @@ public class MainController {
             response.put("log", editorWrapper.getLog()+getOutputLogs());
         }
 
+        response.put("schemas", editorWrapper.getSchemas());
         response.put("isRunning", isRunning);
         response.put("jsonOperators", StreamBuilderUtil.getOperatorJson());
 
@@ -77,6 +79,7 @@ public class MainController {
         System.err.println(storeEditor.get("jsonEditor").toString());
         editorWrapper.setStoredEditor(storeEditor.get("jsonEditor").toString());
         editorWrapper.setLog(storeEditor.get("log").toString());
+        editorWrapper.setSchemas(storeEditor.get("schemas").toString());
     }
 
     /*

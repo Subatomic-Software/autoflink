@@ -6,6 +6,15 @@ $.get({
         console.log("UI driver json loaded");
         var response = JSON.parse(data)
         logger.value = response.log;
+        console.log(response.schemas);
+        if(response.schemas !== ""){
+            storedSchemas = JSON.parse(response.schemas);
+            schemas = storedSchemas.schemas;
+            schemaToValues = storedSchemas.schemaToValues;
+            schemasToSend = storedSchemas.schemasToSend;
+            variables = storedSchemas.variables;
+            populateSchemaSelect();
+        }
         startEditor(JSON.parse(response.jsonOperators));
 
         if(response.isRunning == true){
@@ -37,6 +46,14 @@ function serverConnect(){
         var request = {};
         request["jsonEditor"] = JSON.stringify(jsonEditor);
         request["log"] = logger.value === undefined ? "" : logger.value;
+
+        var schemasJson = {};
+        schemasJson["schemas"] = schemas;
+        schemasJson["schemasToSend"] = schemasToSend;
+        schemasJson["schemaToValues"] = schemaToValues;
+        schemasJson["variables"] = variables;
+        request["schemas"] = JSON.stringify(schemasJson);
+
         $.ajax({
             url: 'http://localhost:8080/saveEditor',
             type: 'PUT',
@@ -303,6 +320,8 @@ function loadEditorFromJson(jsonDriver){
         console.log(JSON.stringify(reteJson));
         editor.fromJSON(reteJson);
 
+        generateAutoComplete();
+
         return;
 }
 
@@ -386,15 +405,15 @@ function openLog() {
     document.getElementById("logForm").style.display = "block";
     }
 
-    function closeLog() {
+function closeLog() {
     document.getElementById("logForm").style.display = "none";
 }
 
 //opens/closes Schema window
 function openSchema() {
     document.getElementById("schemaForm").style.display = "block";
-    }
+}
 
-    function closeSchema() {
+function closeSchema() {
     document.getElementById("schemaForm").style.display = "none";
 }

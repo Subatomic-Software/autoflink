@@ -7,6 +7,15 @@ public class EditorWrapper {
 
     private String storedEditor;
     private String log;
+    private String schemas;
+
+    public String getSchemas() {
+        return schemas;
+    }
+
+    public void setSchemas(String schemas) {
+        this.schemas = schemas;
+    }
 
     public String getLog() {
         return log;

@@ -50,13 +50,16 @@ function startEditor(jsonObj){
     });
     editor.use(MinimapPlugin.default);
 
-
     components.map(c => {
         editor.register(c);
     });
 
     editor.on('zoom', ({ source }) => {
         return source !== 'dblclick';
+    });
+
+    editor.on('nodecreated',  () => {
+        generateAutoComplete();
     });
 
     editor.view.resize();
@@ -252,4 +255,19 @@ function getJoin(type, name, subtype) {
           return this._name;
       }
     }
+}
+
+function generateAutoComplete(){
+    var inputs = $("input#variable");
+    for(var inputindex in inputs){
+        if(inputs[inputindex].parentElement !== undefined){
+            inputs[inputindex].parentElement.classList.add("ui-front");
+        }
+    }
+    inputs.autocomplete({
+      source: variables,
+      minLength: 0
+    }).focus(function() {
+        $(this).autocomplete("search", $(this).val());
+    });
 }
