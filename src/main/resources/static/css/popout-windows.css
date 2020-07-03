@@ -1,43 +1,12 @@
-/* GENERAL POPOUT WINDOW SETTINGS */
-.open-button {
-    background-color: #555;
-    color: white;
-    padding: 16px 20px;
-    border: none;
-    cursor: pointer;
-    opacity: 0.8;
-    position: fixed;
-    bottom: 23px;
-    right: 28px;
-    width: 280px;
-    border: 1px solid #4e58bf;
-  }
+/*GENERAL POP OUT SETTINGS */
+.window-close{
+  position: absolute;
+  right: 1%;
+  top: 1%;
+  background-color: red !important;
+}
 
-  .form-container .btn:hover, .open-button:hover {
-    opacity: 1;
-  }
-
-  .form-container {
-    padding: 10px;
-    background-color: #605e5e;
-  }
-
-  .form-container textarea:focus {
-    background-color: #ddd;
-    outline: none;
-  }
-
-  .form-container .btn {
-    color: white;
-    padding: 16px 20px;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    margin-bottom:10px;
-    opacity: 0.8;
-  }
-
-  /*SCHEMA EDITOR SETTINGS*/
+/*SCHEMA EDITOR SETTINGS*/
   .schema-editor {
     display: none;
     position: fixed;
@@ -46,31 +15,38 @@
     left: 5%;
     border: 3px solid #4e58bf;
     z-index: 9;
-    width: 100%;
     resize: both !important;
     overflow: auto !important;
     height: 90%;
     width: 90%;
     background-color:rgba(96, 94, 94, 0.8);
+    margin: 0;
   }
 
   .schema-editor-container {
-    height: 50% !important;
-    margin: 2%;
+    height: 93% !important;
+    margin: 0 !important;
   }
   
  .schema-text-editor {
     width: 100%;
-    height: 50%;
-    padding: 15px;
+    height: 92% !important;
     border: none;
     background: #605e5e;
     resize: none;
-    min-height: 100px;
     color: white;
     border: 3px solid #4e58bf;
   }
 
+  .schema-control-button{
+    position: absolute;
+    right: 1%;
+    bottom: 1%;
+  }
+
+  .schema-select{
+    width: 100%;
+  }
   
   /* LOP WINDOW SETTINGS */
   .log-popup {
@@ -100,8 +76,39 @@
     color: white;
   }
 
-  .log-close{
-    width: 60px !important;
-    padding: 0px !important;
-    background-color: red !important;
+  .open-button {
+    background-color: rgba(110, 136, 255, 1) !important;
+    border: 2px solid #4e58bf !important;
+    color: white;
+    border: none;
+    cursor: pointer;
+    position: fixed;
+    bottom: 1%;
+    right: 1%;
+    width: 100px; 
+    height: 30px;
+  }
+
+  .form-container .btn:hover, .open-button:hover {
+    opacity: 1;
+  }
+
+  .form-container {
+    padding: 10px;
+    background-color: #605e5e;
+  }
+
+  .form-container textarea:focus {
+    background-color: #ddd;
+    outline: none;
+  }
+
+  .form-container .btn {
+    color: white;
+    padding: 16px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom:10px;
+    opacity: 0.8;
   }

@@ -69,31 +69,30 @@
         
         <!--SCHEMA INTERFACE-->
         <div class="schema-editor" id="schemaForm">
-            <div class="row" class="row" style="height: 5%">
-                <button type="button" class="btn btn-danger log-close" onclick="closeSchema()" style="margin-left: 2%;">Close</button>
-                <button class="btn default-btn" type="button" onclick="loadSchemaFile()">Load Schema</button>
+            <div class="row" class="row" style="height: 5%; margin: 0; margin-bottom: 1%;">
+                <button type="button" class="btn btn-danger window-close" onclick="closeSchema()">Close</button>
+                <button class="btn default-btn" type="button" style="position: absolute; left: 1%; top: 1%" onclick="loadSchemaFile()">Load Schema</button>
                 <input type="file" id="schemaInput"  style="visibility: hidden">
             </div>
-            <div class="row" style="height: 70%">
-                <div class="col-6">
-                    <div class="schema-editor-container">
-                        <textarea oninput="preloadSchema();" placeholder="None" name="schemaTextBox" id="schemaTextBox" class="schema-text-editor"></textarea>
-                        <button class="btn default-btn" type="button" onclick="addSchemaClick()">Add</button>
-                    </div>                
+            <div class="row schema-editor-container">
+                <div class="col-10">
+                        <textarea oninput="preloadSchema();" placeholder="Load or write new schema..." name="schemaTextBox" id="schemaTextBox" class="schema-text-editor"></textarea>
+                        <button class="btn default-btn schema-control-button" type="button" onclick="addSchemaClick()">Add</button>               
                 </div>
-                <div class="col-6">
-                    <div class="schema-list-container" id="schema-list-container">Schema list goes here</div>
-                    <select id="schemaSelect" multiple></select>
-                    <button class="btn default-btn" type="button" onclick="deleteSchemaSelect()">Delete</button>
+                <div class="col-2">
+                    <div class="schema-list-container" id="schema-list-container">
+                        <select id="schemaSelect" class="schema-select" multiple></select>
+                        <button class="btn default-btn schema-control-button" type="button" onclick="deleteSchemaSelect()">Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!--LOG POPOUT BOX-->
-        <button class="open-button" onclick="openLog()">Logs</button>
+        <button class="default-btn open-button" onclick="openLog()">Logs</button>
         <div class="log-popup" id="logForm">
+            <div><button type="button" class="btn btn-danger window-close" onclick="closeLog()">Close</button></div>
             <form class="form-container log-container">
-                <button type="button" class="btn cancel log-close" onclick="closeLog()">Close</button>
                 <textarea placeholder="No Logs Yet" name="logBox" id="logTextBox" class="log-text-area" readonly></textarea>
             </form>
         </div>
