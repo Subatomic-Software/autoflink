@@ -3,7 +3,6 @@
   position: absolute;
   right: 1%;
   top: 1%;
-  background-color: red !important;
 }
 
 /*SCHEMA EDITOR SETTINGS*/
@@ -13,13 +12,13 @@
     top: 5%;
     right: 5%;
     left: 5%;
-    border: 3px solid #4e58bf;
+    border: 3px solid;
     z-index: 9;
     resize: both !important;
     overflow: auto !important;
     height: 90%;
     width: 90%;
-    background-color:rgba(96, 94, 94, 0.8);
+    opacity: 0.8;
     margin: 0;
   }
 
@@ -31,11 +30,8 @@
  .schema-text-editor {
     width: 100%;
     height: 92% !important;
-    border: none;
-    background: #605e5e;
+    border: solid 3px;
     resize: none;
-    color: white;
-    border: 3px solid #4e58bf;
   }
 
   .schema-control-button{
@@ -53,7 +49,7 @@
     display: none;
     position: fixed;
     bottom: 0;
-    border: 1px solid #4e58bf;
+    border: 1px solid;
     z-index: 9;
     width: 100%;
     resize: both !important;
@@ -70,17 +66,12 @@
     padding: 15px;
     margin: 5px 0 22px 0;
     border: none;
-    background: #605e5e;
     resize: none;
     min-height: 100px;
-    color: white;
   }
 
   .open-button {
-    background-color: rgba(110, 136, 255, 1) !important;
-    border: 2px solid #4e58bf !important;
-    color: white;
-    border: none;
+    border: 2px solid;
     cursor: pointer;
     position: fixed;
     bottom: 1%;
@@ -95,16 +86,13 @@
 
   .form-container {
     padding: 10px;
-    background-color: #605e5e;
   }
 
   .form-container textarea:focus {
-    background-color: #ddd;
     outline: none;
   }
 
   .form-container .btn {
-    color: white;
     padding: 16px 20px;
     border: none;
     cursor: pointer;

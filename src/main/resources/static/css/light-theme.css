@@ -1,0 +1,49 @@
+/*COLOR CONTROLS*/
+
+/* BACKGROUNDS */
+.schema-text-editor{
+    background:  #fffff0  !important;
+}
+
+.log-text-area {
+    background: #ffffe6 !important;
+}
+
+.default-btn, .open-button, .node {
+    background: #6e88ff !important;
+}
+
+.node.selected {
+    background: #ffa32cc9 !important;
+}
+
+.form-container textarea:focus {
+    background-color: #ddd;
+}
+
+.window-close {
+    background-color: red;
+}
+
+html, body, select, input, .schema-editor, .form-container {
+    background-color: #ffffe6  !important;
+}
+
+/* BORDERS */
+.default-btn, .schema-editor, .schema-text-editor, .log-popup, .open-button, .node {
+    border-color: #4d6dff !important;
+}
+
+select, input, .socket {
+    border-color: #ffffe6 !important;
+}
+
+.node.selected {
+    border-color: #e3c000 !important;
+}
+
+/* COLOR */
+.default-btn, select, input, .schema-text-editor, .log-text-area, .open-button {
+    color: white !important;
+}
+

@@ -27,3 +27,5 @@ var schemasToSend = {};
 var schemaToValues = {};
 var embedSeperator = "."
 
+if (!$("link[href='css/light-theme.css']").length)
+    $('<link href="css/light-theme.css" rel="stylesheet">').appendTo("head");

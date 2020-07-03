@@ -417,3 +417,16 @@ function openSchema() {
 function closeSchema() {
     document.getElementById("schemaForm").style.display = "none";
 }
+
+function themeToggle(){
+    if ($("link[href='css/light-theme.css']").length){
+        $("link[href='css/light-theme.css']").remove();
+        $('<link href="css/dark-theme.css" rel="stylesheet">').appendTo("head");
+    } 
+    else{
+        if ($("link[href='css/dark-theme.css']").length){
+            $("link[href='css/dark--theme.css']").remove();
+            $('<link href="css/light-theme.css" rel="stylesheet">').appendTo("head");
+        } 
+    }
+}

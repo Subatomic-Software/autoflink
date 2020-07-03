@@ -2,28 +2,24 @@
 html, body {
   height: 100%;
   width: 100%;
-  background-color: #605e5e  !important;
 }
 
 /*FORM SETTINGS*/
 select, input {
   width: 100%;
   border-radius: 30px;
-  background-color: white;
   padding: 2px 6px;
-  border: 1px solid #999;
   font-size: 110%;
   width: 170px;
-  color: white !important;
-  background-color: #605e5e !important;
-  border-color: #605e5e !important;
+}
+
+select[multiple]{
+  border:none;
 }
 
 .default-btn {
-  background: rgba(110, 136, 255, 0.8) !important;
-  border: 2px solid #4e58bf !important;
-  color: white !important;
   border-radius: 10px;
+  border: solid 2px;
 }
 
 .btn:hover {
@@ -48,28 +44,14 @@ select, input {
   width: 140px;
 }
 
-.node.selected {
-  background: #ffa32cc9;
-  border-color: #e3c000;
-}
-
-.socket {
-  border-color: #605e5e !important;
-} 
-
 .dock {
-    /* height: 50px; */
-    /* overflow-x: auto; */
     overflow-y: auto !important;
     flex-wrap: wrap;
-    /* white-space: nowrap; */
-
 }
 
 .dock-item {
     display: inline-block;
     vertical-align: top;
-    /* transform: scaleY(0.7); */
     transform-origin: 50% 0;
 }
 

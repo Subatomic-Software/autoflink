@@ -28,10 +28,10 @@
     <script src="https://cdn.muicss.com/mui-0.9.34/js/mui.min.js"></script>
     <script src="https://rawgit.com/alertifyjs/alertify.js/master/dist/js/alertify.js"></script>
 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <!--CUSTOM CSS-->
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/popout-windows.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
 </head>
     <body>
             <div class="container-fluid">
@@ -43,6 +43,7 @@
                         <div class="spinner-grow text-success" id="jobState"></div>
                     </div>
                     <div class="col-10" >
+                        <button class="btn default-btn" type="button" onclick="themeToggle();">Theme</button>
                         <button class="btn default-btn" type="button" onclick="editorToStreamJson(true);">Generate Json</button>
                         <button class="btn default-btn" type="button" onclick="redrawEditor();">Redraw Editor</button>
                         <button class="btn default-btn" type="button" onclick="clearEditor();">Clear Editor</button>
