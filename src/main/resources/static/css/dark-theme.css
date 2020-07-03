@@ -14,7 +14,7 @@
 }
 
 .node.selected {
-    background: #ffa32cc9;
+    background: #ffa32cc9 !important;
 }
 
 .form-container textarea:focus {
@@ -39,7 +39,7 @@ select, input, .socket {
 }
 
 .node.selected {
-    border-color: #e3c000;
+    border-color: #e3c000 !important;
 }
 
 /* COLOR */
