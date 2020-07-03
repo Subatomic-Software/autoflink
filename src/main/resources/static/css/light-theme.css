@@ -47,3 +47,7 @@ select, input, .socket {
     color: white !important;
 }
 
+select, input, .schema-text-editor{
+    color: black !important;
+}
+
