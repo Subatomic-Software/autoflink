@@ -4,6 +4,8 @@ import org.apache.flink.core.execution.JobClient;
 import org.slotterback.FlinkBootConnector;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class FlinkBootConnectorWrapper {
 

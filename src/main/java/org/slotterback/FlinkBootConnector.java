@@ -13,6 +13,7 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class FlinkBootConnector {
 
@@ -25,6 +26,7 @@ public class FlinkBootConnector {
         jobName = parameterTool.get("streambuilder.jobname", "AutoFlinkJob");
         String jsonFile = parameterTool.get("streambuilder.json.file", null);
         String jsonRaw = parameterTool.get("streambuilder.json.raw", null);
+        String schemasRaw = parameterTool.get("streambuilder.schemas.raw", null);
         String schemasString = parameterTool.get("streambuilder.avro", "");
         killDirectory = null;
 
@@ -39,12 +41,14 @@ public class FlinkBootConnector {
 
         ObjectMapper objectMapper = new ObjectMapper();
         Map streamBuilder;
+        Map schemas;
         if(jsonRaw != null){
             streamBuilder = objectMapper.readValue(jsonRaw, HashMap.class);
+            schemas = buildSchemasRaw(schemasRaw, objectMapper);
         }else {
             streamBuilder = objectMapper.readValue(new FileReader(jsonFile), HashMap.class);
+            schemas = buildSchemas(schemasString, objectMapper);
         }
-        Map schemas = buildSchemas(schemasString, objectMapper);
 
         StreamBuilder builder = new StreamBuilder();
         builder.buildStream(streamBuilder, env, schemas, killDirectory);
@@ -56,6 +60,17 @@ public class FlinkBootConnector {
         for (String schema: schemasString.split(",")){
             Map schemaMap = mapper.readValue(new FileReader(schema), HashMap.class);
             schemas.put(schemaMap.get("name"), schema);
+        }
+        return schemas;
+    }
+
+    private Map buildSchemasRaw(String schemasRaw, ObjectMapper mapper) throws IOException {
+        HashMap rawSchemas = mapper.readValue(schemasRaw, HashMap.class);
+        Set<String> keySet = rawSchemas.keySet();
+        Map schemas = new HashMap();
+        schemas.put(null, "");
+        for(String key : keySet){
+            schemas.put(key, rawSchemas.get(key).toString());
         }
         return schemas;
     }

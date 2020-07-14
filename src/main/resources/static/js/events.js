@@ -66,12 +66,16 @@ function serverConnect(){
 
     //STARTS STREAM ON SERVER
     startStream = function() {
+        var request = {};
+        request["driver"] = jsonDriver;
+        request["schemas"] = JSON.stringify(schemasToSend);
+        var requestJson = JSON.stringify(request);
         console.log("json");
-        console.log(jsonDriver);
+        console.log(requestJson);
         $.ajax({
             url: 'http://localhost:8080/start',
             type: 'PUT',
-            data: jsonDriver,
+            data: requestJson,
             contentType: "application/json; charset=utf-8",
             dataType   : "json",
             success: function(result) {

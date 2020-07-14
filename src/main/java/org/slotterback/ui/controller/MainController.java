@@ -100,15 +100,16 @@ public class MainController {
 
     //@PutMapping("/startWithJson")
     @PutMapping("/start")
-    public String startJob(@RequestBody String jsonDriver) throws Exception {
+    public String startJob(@RequestBody Map<String, Object> startStream) throws Exception {
         JobClient client = flinkBootConnectorWrapper.getClient();
         if(client == null || client.getJobStatus().isDone()) {
-            ParameterTool temp = getParametersWithRaw(jsonDriver);
+            String driver = (String) startStream.get("driver");
+            String schemas = (String) startStream.get("schemas");
+            ParameterTool temp = getParametersWithRaw(driver, schemas);
             FlinkBootConnector connector = new FlinkBootConnector(temp);
-            flinkBootConnectorWrapper.setDriverJson(jsonDriver);
+            flinkBootConnectorWrapper.setDriverJson(driver);
             flinkBootConnectorWrapper.setFlinkBootConnector(connector);
             flinkBootConnectorWrapper.setClient(flinkBootConnectorWrapper.getFlinkBootConnector().startFlinkJob());
-            //flinkBootConnectorWrapper.setRunning(true);
             return "triggered start";
         }
         return "unable to start";
@@ -152,11 +153,17 @@ public class MainController {
         return new ObjectMapper().writeValueAsString(response);
     }
 
-    private ParameterTool getParametersWithRaw(String jsonDriver) {
+    private ParameterTool getParametersWithRaw(String jsonDriver, String schemas) {
         getConfig();
         String[] newArgs = ArrayUtils.concat(
                 args.getSourceArgs(),
-                new String[]{"--streambuilder.json.raw", jsonDriver});
+                new String[]
+                        {
+                                "--streambuilder.json.raw",
+                                jsonDriver,
+                                "--streambuilder.schemas.raw",
+                                schemas
+                        });
         ParameterTool parameterTool = ParameterTool.fromArgs(newArgs);
         return parameterTool;
     }
