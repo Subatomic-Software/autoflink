@@ -1,0 +1,72 @@
+/*BASE SETTINGS */
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+/*FORM SETTINGS*/
+select, input {
+  width: 100%;
+  border-radius: 30px;
+  padding: 2px 6px;
+  font-size: 110%;
+  width: 170px;
+}
+
+select[multiple]{
+  border:none;
+}
+
+.default-btn {
+  border-radius: 10px;
+  border: solid 2px;
+}
+
+.btn:hover {
+   opacity: 0.9;
+}
+
+/* EDITOR CANVAS SETTINGS */
+.editor {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    height: 90vh;
+}
+
+.context-menu{
+  /*TODO add a min width to match longest entry*/
+  width: 10% !important;
+}
+
+/*COMPONENT DOCK SETTINGS*/
+.node .control input, .node .input-control input {
+  width: 140px;
+}
+
+.dock {
+    overflow-y: auto !important;
+    flex-wrap: wrap;
+}
+
+.dock-item {
+    display: inline-block;
+    vertical-align: top;
+    transform-origin: 50% 0;
+}
+
+.dock-item .node{
+  max-height: 40px;
+  overflow: hidden;
+}
+
+.dock-item:hover {
+   opacity: 0.9;
+}
+
+.row.dock {
+    position: absolute;
+    bottom: 10px;
+}
+
+

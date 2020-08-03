@@ -5,13 +5,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.0.1/jquery-migrate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.6/vue.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/alight@0.14.1/alight.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/rete@1.4.3-rc.1/build/rete.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/rete-vue-render-plugin@0.3.5/build/vue-render-plugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/rete-connection-plugin@0.8.3-rc.1/build/connection-plugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete@1.4.4/build/rete.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete-vue-render-plugin@0.5.0/build/vue-render-plugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete-connection-plugin@0.9.0/build/connection-plugin.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/rete-dock-plugin@0.2.1/build/dock-plugin.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/rete-context-menu-plugin@0.5.2/build/context-menu-plugin.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/rete-area-plugin@0.2.1/build/area-plugin.min.js"></script>
@@ -20,34 +22,88 @@
     <script src="https://cdn.jsdelivr.net/npm/rete-connection-mastery-plugin@0.1.0/build/connection-mastery-plugin.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/rete-alight-render-plugin@0.1.5/build/alight-render-plugin.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/rete-task-plugin@0.1.7/build/task-plugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete-readonly-plugin@0.4.1/build/readonly-plugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rete-minimap-plugin@0.3.1/build/minimap-plugin.min.js"></script>
 
     <script src="https://cdn.muicss.com/mui-0.9.34/js/mui.min.js"></script>
     <script src="https://rawgit.com/alertifyjs/alertify.js/master/dist/js/alertify.js"></script>
 
-    <script src="js/main.js" defer></script>
-    <link rel="stylesheet" href="css/test.css">
-
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <!--CUSTOM CSS-->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/popout-windows.css">
 </head>
-<body>
-<button type="button" onclick="editorToStreamJson(true);">Generate Json</button>
-<button type="button" onclick="redrawEditor();">Redraw Editor</button>
-<button type="button" onclick="clearEditor();">Clear Editor</button>
-<button type="button" onclick="undoClear();">Undo Clear</button>
-<button type="button" onclick="loadEditor();">Load Editor</button>
-<div>
-    <button type="button" onclick="startStream();">Start Stream</button>
-    <button type="button" onclick="stopStream();">Stop Stream</button>
-</div>
-<div>
-    <input type="file" id="fileInput">
-</div>
-<label id="logger"></label>
-<div class="editor">
-    <div class="container">
-        <div class="node-editor" id="rete"></div>
-    </div>
-    <div class="dock"></div>
-</div>
-</body>
+    <body>
+            <div class="container-fluid">
+                <!--BUTTON HEADERS-->
+                <div class=row>
+                    <div class="col-2" >
+                        <button class="btn default-btn" type="button" onclick="startStream();">Start Stream</button>
+                        <button class="btn default-btn" type="button" onclick="stopStream();">Stop Stream</button>
+                        <div class="spinner-grow text-success" id="jobState"></div>
+                    </div>
+                    <div class="col-10" >
+                        <button class="btn default-btn" type="button" onclick="themeToggle();">Theme</button>
+                        <button class="btn default-btn" type="button" onclick="editorToStreamJson(true);">Generate Json</button>
+                        <button class="btn default-btn" type="button" onclick="redrawEditor();">Redraw Editor</button>
+                        <button class="btn default-btn" type="button" onclick="clearEditor();">Clear Editor</button>
+                        <button class="btn default-btn" type="button" onclick="undoClear();">Undo Clear</button>
+                        <button class="btn default-btn" type="button" onclick="loadEditor();">Load Editor</button>
+                        <button class="btn default-btn" onclick="openSchema()">Schema</button>
+                        <input type="file" id="fileInput"  style="visibility: hidden">
+                    </div>
+                </div>
+                
+                <!--DOCK COLUMN-->
+                <div class="container-fluid row" style="height: 95%">
+                    <div class="col-2" >
+                        <div class="row dock">
+                        </div>
+                    </div>
+                    <div class="col-10" >
+                        <div class="editor" style="width:100%">
+                            <div class="node-editor" id="rete"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!--SCHEMA INTERFACE-->
+        <div class="schema-editor" id="schemaForm">
+            <div class="row" class="row" style="height: 5%; margin: 0; margin-bottom: 1%;">
+                <button type="button" class="btn btn-danger window-close" onclick="closeSchema()">Close</button>
+                <button class="btn default-btn" type="button" style="position: absolute; left: 1%; top: 1%" onclick="loadSchemaFile()">Load Schema</button>
+                <input type="file" id="schemaInput"  style="visibility: hidden">
+            </div>
+            <div class="row schema-editor-container">
+                <div class="col-10">
+                        <textarea oninput="preloadSchema();" placeholder="Load or write new schema..." name="schemaTextBox" id="schemaTextBox" class="schema-text-editor"></textarea>
+                        <button class="btn default-btn schema-control-button" type="button" onclick="addSchemaClick()">Add</button>               
+                </div>
+                <div class="col-2">
+                    <div class="schema-list-container" id="schema-list-container">
+                        <select id="schemaSelect" class="schema-select" multiple></select>
+                        <button class="btn default-btn schema-control-button" type="button" onclick="deleteSchemaSelect()">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--LOG POPOUT BOX-->
+        <button class="default-btn open-button" onclick="openLog()">Logs</button>
+        <div class="log-popup" id="logForm">
+            <div><button type="button" class="btn btn-danger window-close" onclick="closeLog()">Close</button></div>
+            <form class="form-container log-container">
+                <textarea placeholder="No Logs Yet" name="logBox" id="logTextBox" class="log-text-area" readonly></textarea>
+            </form>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+        <script src="js/rete.js" defer></script>
+        <script src="js/main.js" defer></script>
+        <script src="js/schemas.js" defer></script>
+        <script src="js/events.js" defer></script>
+    </body>
 
 </html>
