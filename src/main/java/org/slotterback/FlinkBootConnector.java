@@ -1,6 +1,9 @@
 package org.slotterback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
+import org.apache.flink.api.common.ExecutionConfig;
+import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.core.execution.JobClient;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -70,7 +73,8 @@ public class FlinkBootConnector {
         Map schemas = new HashMap();
         schemas.put(null, "");
         for(String key : keySet){
-            schemas.put(key, rawSchemas.get(key).toString());
+            String json = new ObjectMapper().writeValueAsString(rawSchemas.get(key));
+            schemas.put(key, json);
         }
         return schemas;
     }

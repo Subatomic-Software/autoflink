@@ -1,0 +1,21 @@
+{
+    "type" : "record",
+    "namespace" : "org.slotterback",
+    "name" : "SateliteTelemetry",
+    "fields" : [
+        { "name" : "id" , "type" : "string" },
+        { "name" : "time" , "type" : "long" },
+        { "name" : "latitude" , "type" : "double" },
+        { "name" : "longitude" , "type" : "double" },
+        {"name" : "telemetry", "type" : {
+           "type" : "record",
+           "name" : "Telemetry",
+           "fields" : [
+              {"name" : "battery", "type" : "int"},
+              {"name" : "computer", "type" : "int"},
+              {"name" : "temperature", "type" : "double"},
+              {"name" : "error", "type" : "int"}
+            ]}
+        }
+    ]
+}

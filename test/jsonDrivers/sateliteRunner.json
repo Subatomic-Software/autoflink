@@ -1,0 +1,1 @@
+{"kafkasource0":{"function":"source","type":"kafka","outputs":["printsink0"],"kafka":{"groupId":"tlm_demo","topic":"tlm","broker":"localhost:9092","format":{"schema":"SateliteTelemetry","type":"avro"}}},"printsink0":{"function":"sink","type":"print","print":{}}}

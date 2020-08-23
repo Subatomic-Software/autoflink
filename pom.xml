@@ -69,7 +69,17 @@ under the License.
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka_2.11</artifactId>
-            <version>1.9.2</version>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-avro</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.javakaffee</groupId>
+            <artifactId>kryo-serializers</artifactId>
+            <version>0.45</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.json/json -->
@@ -170,21 +180,34 @@ under the License.
                 </configuration>
             </plugin>
 
-            <!-- boot
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>-->
+
 
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+
                 <configuration>
                     <fork>true</fork>
-                    <mainClass>org.slotterback.ui.BootJob</mainClass>
                 </configuration>
                 <executions>
+
                     <execution>
+                        <id>flink</id>
+                        <configuration>
+                            <finalName>flinkJar</finalName>
+                            <mainClass>org.slotterback.StreamingJob</mainClass>
+                        </configuration>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>ui</id>
+                        <configuration>
+                            <finalName>uiJar</finalName>
+                            <mainClass>org.slotterback.ui.BootJob</mainClass>
+                        </configuration>
                         <goals>
                             <goal>repackage</goal>
                         </goals>

@@ -1,5 +1,9 @@
 package org.slotterback;
 
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
+
 import java.util.*;
 
 public class GenericUtil {
@@ -53,5 +57,19 @@ public class GenericUtil {
             ref = ((Map) ref).get(key);
         }
         map.remove(target);
+    }
+
+    public static Map mapFromGeneric(GenericRecord record){
+        Map<String, Object> map = new HashMap<>();
+
+        for (Schema.Field field : record.getSchema().getFields()) {
+            if(record.get(field.name()).getClass() == GenericData.Record.class){
+                map.put(field.name(), mapFromGeneric((GenericRecord) record.get(field.name())));
+            }else{
+                map.put(field.name(), record.get(field.name()));
+            }
+        }
+
+        return map;
     }
 }
