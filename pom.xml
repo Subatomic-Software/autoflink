@@ -195,7 +195,7 @@ under the License.
                         <id>flink</id>
                         <configuration>
                             <finalName>flinkJar</finalName>
-                            <mainClass>org.slotterback.StreamingJob</mainClass>
+                            <mainClass>com.subatomicsoftware.autoflink.StreamingJob</mainClass>
                         </configuration>
                         <goals>
                             <goal>repackage</goal>
@@ -206,7 +206,7 @@ under the License.
                         <id>ui</id>
                         <configuration>
                             <finalName>uiJar</finalName>
-                            <mainClass>org.slotterback.ui.BootJob</mainClass>
+                            <mainClass>com.subatomicsoftware.autoflink.ui.BootJob</mainClass>
                         </configuration>
                         <goals>
                             <goal>repackage</goal>
