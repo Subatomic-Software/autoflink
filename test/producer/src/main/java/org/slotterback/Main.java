@@ -40,19 +40,26 @@ public class Main {
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(out, null);
-            String key = "Key" + (int)Math.floor(Math.random()*5);
-            Integer val = (int)Math.floor(Math.random()*10);
+
+            String id = "SV" + (int)Math.floor(Math.random()*77+1);
+            Double lati = (Math.random()*2-1)*90;
+            Double longi = (Math.random()*2-1)*180;
+            Integer battery = (int)Math.floor((Math.random()*60)+40);
+            Integer computer = (int)(Math.random()*2)+1;
+            Double temp = (Math.random()*300)-150;
+            Integer error = (Math.random() < 0.1) ? 1 : 0;
 
             SateliteTelemetry test = new SateliteTelemetry();
             Telemetry telemetry = new Telemetry();
-            test.setId("testid");
-            test.setLongitude(0.1111);
-            test.setLatitude(-0.1111);
+
+            test.setId(id);
+            test.setLongitude(longi);
+            test.setLatitude(lati);
             test.setTime(System.currentTimeMillis());
-            telemetry.setBattery(100);
-            telemetry.setComputer(1);
-            telemetry.setTemperature(-200);
-            telemetry.setError(0);
+            telemetry.setBattery(battery);
+            telemetry.setComputer(computer);
+            telemetry.setTemperature(temp);
+            telemetry.setError(error);
             test.setTelemetry(telemetry);
 
             try {
