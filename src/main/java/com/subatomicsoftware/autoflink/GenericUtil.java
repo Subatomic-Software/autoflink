@@ -3,6 +3,7 @@ package com.subatomicsoftware.autoflink;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.util.Utf8;
 
 import java.util.*;
 
@@ -65,6 +66,8 @@ public class GenericUtil {
         for (Schema.Field field : record.getSchema().getFields()) {
             if(record.get(field.name()).getClass() == GenericData.Record.class){
                 map.put(field.name(), mapFromGeneric((GenericRecord) record.get(field.name())));
+            }else if(record.get(field.name()).getClass() == Utf8.class){
+                map.put(field.name(), String.valueOf(record.get(field.name())));
             }else{
                 map.put(field.name(), record.get(field.name()));
             }

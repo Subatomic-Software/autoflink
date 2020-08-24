@@ -9,7 +9,7 @@
         { "name" : "longitude" , "type" : "double" },
         {"name" : "telemetry", "type" : {
            "type" : "record",
-           "name" : "Telemetry",
+           "name" : "telemetry",
            "fields" : [
               {"name" : "battery", "type" : "int"},
               {"name" : "computer", "type" : "int"},

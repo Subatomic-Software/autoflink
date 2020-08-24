@@ -56,6 +56,7 @@ public class FlinkBootConnector {
 
     private Map buildSchemas(String schemasString, ObjectMapper mapper) throws IOException {
         Map schemas = new HashMap<String, String>();
+        schemas.put("", "");
         schemas.put(null, "");
         for (String schema: schemasString.split(",")){
             Map schemaMap = mapper.readValue(new FileReader(schema), HashMap.class);
@@ -68,6 +69,7 @@ public class FlinkBootConnector {
         HashMap rawSchemas = mapper.readValue(schemasRaw, HashMap.class);
         Set<String> keySet = rawSchemas.keySet();
         Map schemas = new HashMap();
+        schemas.put("", "");
         schemas.put(null, "");
         for(String key : keySet){
             String json = new ObjectMapper().writeValueAsString(rawSchemas.get(key));

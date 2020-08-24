@@ -5,7 +5,6 @@
  */
 package org.slotterback;
 
-import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
 import org.apache.avro.util.Utf8;
 import org.apache.avro.message.BinaryMessageEncoder;
@@ -14,8 +13,8 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 150131475713367412L;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"SateliteTelemetry\",\"namespace\":\"org.slotterback\",\"fields\":[{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"time\",\"type\":\"long\"},{\"name\":\"latitude\",\"type\":\"double\"},{\"name\":\"longitude\",\"type\":\"double\"},{\"name\":\"telemetry\",\"type\":{\"type\":\"record\",\"name\":\"Telemetry\",\"fields\":[{\"name\":\"battery\",\"type\":\"int\"},{\"name\":\"computer\",\"type\":\"int\"},{\"name\":\"temperature\",\"type\":\"double\"},{\"name\":\"error\",\"type\":\"int\"}]}}]}");
+  private static final long serialVersionUID = -5568510541296869409L;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"SateliteTelemetry\",\"namespace\":\"org.slotterback\",\"fields\":[{\"name\":\"id\",\"type\":\"string\"},{\"name\":\"time\",\"type\":\"long\"},{\"name\":\"latitude\",\"type\":\"double\"},{\"name\":\"longitude\",\"type\":\"double\"},{\"name\":\"telemetry\",\"type\":{\"type\":\"record\",\"name\":\"telemetry\",\"fields\":[{\"name\":\"battery\",\"type\":\"int\"},{\"name\":\"computer\",\"type\":\"int\"},{\"name\":\"temperature\",\"type\":\"double\"},{\"name\":\"error\",\"type\":\"int\"}]}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static SpecificData MODEL$ = new SpecificData();
@@ -75,7 +74,7 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
    private long time;
    private double latitude;
    private double longitude;
-   private org.slotterback.Telemetry telemetry;
+   private Telemetry telemetry;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -92,7 +91,7 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
    * @param longitude The new value for longitude
    * @param telemetry The new value for telemetry
    */
-  public SateliteTelemetry(java.lang.CharSequence id, java.lang.Long time, java.lang.Double latitude, java.lang.Double longitude, org.slotterback.Telemetry telemetry) {
+  public SateliteTelemetry(java.lang.CharSequence id, java.lang.Long time, java.lang.Double latitude, java.lang.Double longitude, Telemetry telemetry) {
     this.id = id;
     this.time = time;
     this.latitude = latitude;
@@ -122,7 +121,7 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
     case 1: time = (java.lang.Long)value$; break;
     case 2: latitude = (java.lang.Double)value$; break;
     case 3: longitude = (java.lang.Double)value$; break;
-    case 4: telemetry = (org.slotterback.Telemetry)value$; break;
+    case 4: telemetry = (Telemetry)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -199,7 +198,7 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
    * Gets the value of the 'telemetry' field.
    * @return The value of the 'telemetry' field.
    */
-  public org.slotterback.Telemetry getTelemetry() {
+  public Telemetry getTelemetry() {
     return telemetry;
   }
 
@@ -208,7 +207,7 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
    * Sets the value of the 'telemetry' field.
    * @param value the value to set.
    */
-  public void setTelemetry(org.slotterback.Telemetry value) {
+  public void setTelemetry(Telemetry value) {
     this.telemetry = value;
   }
 
@@ -256,8 +255,8 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
     private long time;
     private double latitude;
     private double longitude;
-    private org.slotterback.Telemetry telemetry;
-    private org.slotterback.Telemetry.Builder telemetryBuilder;
+    private Telemetry telemetry;
+    private Telemetry.Builder telemetryBuilder;
 
     /** Creates a new Builder */
     private Builder() {
@@ -291,7 +290,7 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
         fieldSetFlags()[4] = other.fieldSetFlags()[4];
       }
       if (other.hasTelemetryBuilder()) {
-        this.telemetryBuilder = org.slotterback.Telemetry.newBuilder(other.getTelemetryBuilder());
+        this.telemetryBuilder = Telemetry.newBuilder(other.getTelemetryBuilder());
       }
     }
 
@@ -485,7 +484,7 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
       * Gets the value of the 'telemetry' field.
       * @return The value.
       */
-    public org.slotterback.Telemetry getTelemetry() {
+    public Telemetry getTelemetry() {
       return telemetry;
     }
 
@@ -495,7 +494,7 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
       * @param value The value of 'telemetry'.
       * @return This builder.
       */
-    public org.slotterback.SateliteTelemetry.Builder setTelemetry(org.slotterback.Telemetry value) {
+    public org.slotterback.SateliteTelemetry.Builder setTelemetry(Telemetry value) {
       validate(fields()[4], value);
       this.telemetryBuilder = null;
       this.telemetry = value;
@@ -515,12 +514,12 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
      * Gets the Builder instance for the 'telemetry' field and creates one if it doesn't exist yet.
      * @return This builder.
      */
-    public org.slotterback.Telemetry.Builder getTelemetryBuilder() {
+    public Telemetry.Builder getTelemetryBuilder() {
       if (telemetryBuilder == null) {
         if (hasTelemetry()) {
-          setTelemetryBuilder(org.slotterback.Telemetry.newBuilder(telemetry));
+          setTelemetryBuilder(Telemetry.newBuilder(telemetry));
         } else {
-          setTelemetryBuilder(org.slotterback.Telemetry.newBuilder());
+          setTelemetryBuilder(Telemetry.newBuilder());
         }
       }
       return telemetryBuilder;
@@ -531,7 +530,7 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
      * @param value The builder instance that must be set.
      * @return This builder.
      */
-    public org.slotterback.SateliteTelemetry.Builder setTelemetryBuilder(org.slotterback.Telemetry.Builder value) {
+    public org.slotterback.SateliteTelemetry.Builder setTelemetryBuilder(Telemetry.Builder value) {
       clearTelemetry();
       telemetryBuilder = value;
       return this;
@@ -573,7 +572,7 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
             throw e;
           }
         } else {
-          record.telemetry = fieldSetFlags()[4] ? this.telemetry : (org.slotterback.Telemetry) defaultValue(fields()[4]);
+          record.telemetry = fieldSetFlags()[4] ? this.telemetry : (Telemetry) defaultValue(fields()[4]);
         }
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
@@ -633,7 +632,7 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
       this.longitude = in.readDouble();
 
       if (this.telemetry == null) {
-        this.telemetry = new org.slotterback.Telemetry();
+        this.telemetry = new Telemetry();
       }
       this.telemetry.customDecode(in);
 
@@ -658,7 +657,7 @@ public class SateliteTelemetry extends org.apache.avro.specific.SpecificRecordBa
 
         case 4:
           if (this.telemetry == null) {
-            this.telemetry = new org.slotterback.Telemetry();
+            this.telemetry = new Telemetry();
           }
           this.telemetry.customDecode(in);
           break;

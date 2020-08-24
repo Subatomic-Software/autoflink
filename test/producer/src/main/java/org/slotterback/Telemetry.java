@@ -5,17 +5,15 @@
  */
 package org.slotterback;
 
-import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
-import org.apache.avro.util.Utf8;
 import org.apache.avro.message.BinaryMessageEncoder;
 import org.apache.avro.message.BinaryMessageDecoder;
 import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class Telemetry extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = -4379143636360879735L;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Telemetry\",\"namespace\":\"org.slotterback\",\"fields\":[{\"name\":\"battery\",\"type\":\"int\"},{\"name\":\"computer\",\"type\":\"int\"},{\"name\":\"temperature\",\"type\":\"double\"},{\"name\":\"error\",\"type\":\"int\"}]}");
+  private static final long serialVersionUID = -5703406921922595556L;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"telemetry\",\"namespace\":\"org.slotterback\",\"fields\":[{\"name\":\"battery\",\"type\":\"int\"},{\"name\":\"computer\",\"type\":\"int\"},{\"name\":\"temperature\",\"type\":\"double\"},{\"name\":\"error\",\"type\":\"int\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static SpecificData MODEL$ = new SpecificData();
@@ -52,7 +50,7 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
   }
 
   /**
-   * Serializes this Telemetry to a ByteBuffer.
+   * Serializes this telemetry to a ByteBuffer.
    * @return a buffer holding the serialized data for this instance
    * @throws java.io.IOException if this instance could not be serialized
    */
@@ -61,9 +59,9 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
   }
 
   /**
-   * Deserializes a Telemetry from a ByteBuffer.
+   * Deserializes a telemetry from a ByteBuffer.
    * @param b a byte buffer holding serialized data for an instance of this class
-   * @return a Telemetry instance decoded from the given buffer
+   * @return a telemetry instance decoded from the given buffer
    * @throws java.io.IOException if the given bytes could not be deserialized into an instance of this class
    */
   public static Telemetry fromByteBuffer(
@@ -191,41 +189,41 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
   }
 
   /**
-   * Creates a new Telemetry RecordBuilder.
-   * @return A new Telemetry RecordBuilder
+   * Creates a new telemetry RecordBuilder.
+   * @return A new telemetry RecordBuilder
    */
-  public static org.slotterback.Telemetry.Builder newBuilder() {
-    return new org.slotterback.Telemetry.Builder();
+  public static Telemetry.Builder newBuilder() {
+    return new Telemetry.Builder();
   }
 
   /**
-   * Creates a new Telemetry RecordBuilder by copying an existing Builder.
+   * Creates a new telemetry RecordBuilder by copying an existing Builder.
    * @param other The existing builder to copy.
-   * @return A new Telemetry RecordBuilder
+   * @return A new telemetry RecordBuilder
    */
-  public static org.slotterback.Telemetry.Builder newBuilder(org.slotterback.Telemetry.Builder other) {
+  public static Telemetry.Builder newBuilder(Telemetry.Builder other) {
     if (other == null) {
-      return new org.slotterback.Telemetry.Builder();
+      return new Telemetry.Builder();
     } else {
-      return new org.slotterback.Telemetry.Builder(other);
+      return new Telemetry.Builder(other);
     }
   }
 
   /**
-   * Creates a new Telemetry RecordBuilder by copying an existing Telemetry instance.
+   * Creates a new telemetry RecordBuilder by copying an existing telemetry instance.
    * @param other The existing instance to copy.
-   * @return A new Telemetry RecordBuilder
+   * @return A new telemetry RecordBuilder
    */
-  public static org.slotterback.Telemetry.Builder newBuilder(org.slotterback.Telemetry other) {
+  public static Telemetry.Builder newBuilder(Telemetry other) {
     if (other == null) {
-      return new org.slotterback.Telemetry.Builder();
+      return new Telemetry.Builder();
     } else {
-      return new org.slotterback.Telemetry.Builder(other);
+      return new Telemetry.Builder(other);
     }
   }
 
   /**
-   * RecordBuilder for Telemetry instances.
+   * RecordBuilder for telemetry instances.
    */
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<Telemetry>
     implements org.apache.avro.data.RecordBuilder<Telemetry> {
@@ -244,7 +242,7 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(org.slotterback.Telemetry.Builder other) {
+    private Builder(Telemetry.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.battery)) {
         this.battery = data().deepCopy(fields()[0].schema(), other.battery);
@@ -265,10 +263,10 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
     }
 
     /**
-     * Creates a Builder by copying an existing Telemetry instance
+     * Creates a Builder by copying an existing telemetry instance
      * @param other The existing instance to copy.
      */
-    private Builder(org.slotterback.Telemetry other) {
+    private Builder(Telemetry other) {
       super(SCHEMA$);
       if (isValidValue(fields()[0], other.battery)) {
         this.battery = data().deepCopy(fields()[0].schema(), other.battery);
@@ -302,7 +300,7 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'battery'.
       * @return This builder.
       */
-    public org.slotterback.Telemetry.Builder setBattery(int value) {
+    public Telemetry.Builder setBattery(int value) {
       validate(fields()[0], value);
       this.battery = value;
       fieldSetFlags()[0] = true;
@@ -322,7 +320,7 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
       * Clears the value of the 'battery' field.
       * @return This builder.
       */
-    public org.slotterback.Telemetry.Builder clearBattery() {
+    public Telemetry.Builder clearBattery() {
       fieldSetFlags()[0] = false;
       return this;
     }
@@ -341,7 +339,7 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'computer'.
       * @return This builder.
       */
-    public org.slotterback.Telemetry.Builder setComputer(int value) {
+    public Telemetry.Builder setComputer(int value) {
       validate(fields()[1], value);
       this.computer = value;
       fieldSetFlags()[1] = true;
@@ -361,7 +359,7 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
       * Clears the value of the 'computer' field.
       * @return This builder.
       */
-    public org.slotterback.Telemetry.Builder clearComputer() {
+    public Telemetry.Builder clearComputer() {
       fieldSetFlags()[1] = false;
       return this;
     }
@@ -380,7 +378,7 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'temperature'.
       * @return This builder.
       */
-    public org.slotterback.Telemetry.Builder setTemperature(double value) {
+    public Telemetry.Builder setTemperature(double value) {
       validate(fields()[2], value);
       this.temperature = value;
       fieldSetFlags()[2] = true;
@@ -400,7 +398,7 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
       * Clears the value of the 'temperature' field.
       * @return This builder.
       */
-    public org.slotterback.Telemetry.Builder clearTemperature() {
+    public Telemetry.Builder clearTemperature() {
       fieldSetFlags()[2] = false;
       return this;
     }
@@ -419,7 +417,7 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
       * @param value The value of 'error'.
       * @return This builder.
       */
-    public org.slotterback.Telemetry.Builder setError(int value) {
+    public Telemetry.Builder setError(int value) {
       validate(fields()[3], value);
       this.error = value;
       fieldSetFlags()[3] = true;
@@ -439,7 +437,7 @@ public class Telemetry extends org.apache.avro.specific.SpecificRecordBase imple
       * Clears the value of the 'error' field.
       * @return This builder.
       */
-    public org.slotterback.Telemetry.Builder clearError() {
+    public Telemetry.Builder clearError() {
       fieldSetFlags()[3] = false;
       return this;
     }
